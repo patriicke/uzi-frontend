@@ -1,0 +1,29 @@
+export interface ICommonContext {
+  loginPage: any;
+  setLoginPage: any;
+  signup: any;
+  setSignup: any;
+  socket: any;
+  rooms: any;
+  setRooms: any;
+  currentRoom: any;
+  setCurrentRoom: any;
+  members: any;
+  setMembers: any;
+  messages: any;
+  setMessages: any;
+  privateMemberMessages: any;
+  setPrivateMemberMessages: any;
+  newMessages: any;
+  setNewMessages: any;
+  showTabs: any;
+  setShowTabs: any;
+  createRoomShow: any;
+  setCreateRoomShow: any;
+  showSideBar: any;
+  setShowSideBar: any;
+  fullScreen: boolean;
+  setFullScreen: Function;
+  createPublicUserShow: boolean;
+  setCreatePublicUserShow: Function;
+}
