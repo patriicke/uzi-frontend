@@ -4,11 +4,13 @@ import { api } from "../api/api";
 import { resetRoom } from "../redux/slices/roomSlice";
 import { logout, updateUserRedux } from "../redux/slices/userSlice";
 
-export const useWhoAmI = (dispatch: Function) => {
+export const useWhoAmI = () => {
+  const dispatch = useDispatch();
   const whoAmI = async (): Promise<any> => {
     try {
       const response = await api.get("/user/whoami");
       const data = await response.data;
+      console.log(data);
       dispatch(updateUserRedux({ ...data.user, token: data.access_token }));
       localStorage.setItem("token", data.access_token);
     } catch (error) {

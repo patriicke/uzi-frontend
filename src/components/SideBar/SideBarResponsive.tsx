@@ -2,24 +2,26 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Logo from "/favicon.png";
 import Person from "./../../assets/person.png";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/slices/userSlice";
 import { CommonContext } from "../../context";
 import { api } from "../../api/api";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { setRoomsRedux } from "../../redux/slices/roomSlice";
 import { ICONS } from "../../assets";
 import { useLogout } from "../../hooks/user";
+import { ICommonContext } from "../../types/common.context";
 
 const SideBarResponsive: React.FC = () => {
+  const SIDEBAR_ELEMENT: any = useRef(null);
   const { room: searchRoom } = useParams();
-  const { logoutUser } = useLogout();
   const user = useSelector((state: any) => state.user.userData);
   const [showLogout, setShowLogout] = useState(false);
   const [search, setSearch] = useState("");
   const [finalRooms, setFinalRooms] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const dispatch = useDispatch();
-  const SIDEBAR_ELEMENT: any = useRef(null);
+  const [showSideBar, setShowSideBar] = useState<boolean>(false);
+  const { logoutUser } = useLogout();
+
   const {
     socket,
     setMembers,
@@ -28,10 +30,8 @@ const SideBarResponsive: React.FC = () => {
     rooms,
     currentRoom,
     setCreateRoomShow,
-    setLoginPage,
-    showSideBar,
-    setShowSideBar
-  } = useContext(CommonContext);
+    setLoginPage
+  } = useContext<ICommonContext>(CommonContext);
 
   const months = [
     "Jan",
@@ -60,12 +60,10 @@ const SideBarResponsive: React.FC = () => {
     if (!user) {
       return alert("Please login");
     }
-
     socket.emit("join-room", {
       roomToJoin: room,
       currentRoom: currentRoom
     });
-
     setCurrentRoom(room);
   }
 
@@ -73,9 +71,10 @@ const SideBarResponsive: React.FC = () => {
     if (user) {
       setCurrentRoom(searchRoom);
       getRooms();
-
-      socket.emit("join-room", searchRoom, currentRoom);
-
+      socket.emit("join-room", {
+        roomToJoin: searchRoom,
+        currentRoom: currentRoom
+      });
       socket.emit("new-user");
     }
   }, []);

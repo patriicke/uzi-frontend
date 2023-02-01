@@ -16,7 +16,7 @@ import SelectRoom from "./pages/Select/SelectRoom";
 import { socket } from "./context";
 import ChatInterface from "./pages/Chat/ChatInterface";
 import CreateRoomModal from "./components/Modal/CreateRoomModal";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import SideBarResponsive from "./components/SideBar/SideBarResponsive";
 import { useWhoAmI } from "./hooks/user";
 import CreatePublicUserModal from "./components/Modal/CreatePublicUserModal";
@@ -24,8 +24,6 @@ export const ProductContext: any = createContext({});
 
 const App = () => {
   const { room } = useParams();
-  const dispatch = useDispatch();
-  const { whoAmI } = useWhoAmI(dispatch);
   const [loginPage, setLoginPage] = useState<boolean>(false);
   const [signup, setSignup] = useState<string>("login");
   const [rooms, setRooms] = useState<[]>([]);
@@ -44,10 +42,6 @@ const App = () => {
   useEffect(() => {
     setCurrentRoom(room);
   }, [room]);
-
-  useEffect(() => {
-    whoAmI();
-  }, []);
 
   return (
     <CommonContext.Provider

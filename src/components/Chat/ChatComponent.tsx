@@ -17,7 +17,6 @@ const ChatComponent: React.FC = () => {
   const [message, setMessage] = useState("");
   const user = useSelector((state: any) => state.user.userData);
   const [users, setUsers] = useState([]);
-  const navigate = useNavigate();
 
   const {
     socket,
@@ -30,6 +29,7 @@ const ChatComponent: React.FC = () => {
     fullScreen,
     setFullScreen
   } = useContext<ICommonContext>(CommonContext);
+
   const messageEndRef: any = useRef(null);
 
   useEffect(() => {

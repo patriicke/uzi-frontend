@@ -4,7 +4,7 @@ import Person from "./../../assets/person.png";
 import { useDispatch, useSelector } from "react-redux";
 import { CommonContext } from "../../context";
 import { api } from "../../api/api";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { setRoomsRedux } from "../../redux/slices/roomSlice";
 import { ICommonContext } from "../../types/common.context";
 import { ICONS } from "../../assets";
@@ -13,13 +13,11 @@ import { useLogout } from "../../hooks/user";
 const SideBar: React.FC = () => {
   const { room: searchRoom } = useParams();
   const user = useSelector((state: any) => state.user.userData);
-  const roomsRedux = useSelector((state: any) => state.room.rooms);
   const [showLogout, setShowLogout] = useState(false);
   const [search, setSearch] = useState("");
   const [finalRooms, setFinalRooms] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { logoutUser } = useLogout();
 
   const {
@@ -93,12 +91,6 @@ const SideBar: React.FC = () => {
 
   useEffect(() => {
     setFinalRooms(rooms);
-    if (location.href.includes("chat")) {
-      let roomExist = roomsRedux?.filter((room: any) => {
-        return room.roomCode === searchRoom;
-      });
-      if (!roomExist?.length) navigate("/select");
-    }
   }, [rooms, searchRoom]);
 
   useEffect(() => {
@@ -138,7 +130,7 @@ const SideBar: React.FC = () => {
         <div className='flex flex-col gap-2 overflow-auto'>
           <div className='flex justify-between px-2 items-center'>
             <h1 className='text-lg font-semibold'>Rooms</h1>
-            {user.token && (
+            {user.token && user.role !== "PUBLIC" && (
               <button
                 className='p-2 bg-primary-500 text-white px-3 rounded-lg'
                 onClick={() => {
