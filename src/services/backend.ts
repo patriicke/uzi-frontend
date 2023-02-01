@@ -1,3 +1,4 @@
-export const API_URL: string = import.meta.env.VITE_API_URL;
+export const API_URL: string =
+  "https://uzi-backend-production.up.railway.app/api/v1";
 
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+export const SOCKET_URL = "https://uzi-backend-production.up.railway.app";
