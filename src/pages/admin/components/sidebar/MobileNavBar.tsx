@@ -6,9 +6,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FC, useContext, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
 import { ISideBarContext, SidebarContext } from "../../../../context/sidebar";
+import { useLogout } from "../../../../hooks/user";
 import { SideBarLinks } from "./SideBarComponent";
 
 export type ISideBarLinksType = {
@@ -40,12 +42,14 @@ const MobileSideBarComponent: FC = () => {
     return () => document.removeEventListener("mousedown", clickEvent);
   }, [SIDEBAR_ELEMENT]);
 
+  const { userData } = useSelector((state: any) => state.user);
+  const { logoutUser } = useLogout();
   return (
     <aside ref={SIDEBAR_ELEMENT}>
       <div
         className={`absolute ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-64"
-        } z-20 h-full w-64 overflow-y-auto  dark:bg-gray-800 md:hidden duration-150 ease-in-out bg-white`}
+        } z-20 h-full w-64 overflow-y-auto  dark:bg-gray-800 lg:hidden duration-150 ease-in-out bg-white`}
       >
         <div>
           <div className='qa dc ud'>
@@ -58,7 +62,7 @@ const MobileSideBarComponent: FC = () => {
             </div>
             <div>
               <p className='bf ef'>Hello 👋</p>
-              <h6 className='xe bf ef'>NDAYAMBAJE</h6>
+              <h6 className='xe bf ef'>{userData.fullname}</h6>
             </div>
           </div>
           <div className='_ ud he'>
@@ -151,7 +155,9 @@ const MobileSideBarComponent: FC = () => {
             <Link to='#' className='ye bf ef cg'>
               Terms
             </Link>
-            <button className='ye bf ef cg'>Log out</button>
+            <button className='ye bf ef cg' onClick={logoutUser}>
+              Log out
+            </button>
           </div>
         </div>
       </div>

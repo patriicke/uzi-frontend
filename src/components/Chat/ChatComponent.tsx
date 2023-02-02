@@ -151,7 +151,11 @@ const ChatComponent: React.FC = () => {
         <div className='flex items-center gap-4'>
           <div
             className='cursor-pointer z-30 md:hidden'
-            onClick={() => setShowSideBar(true)}
+            onClick={() => {
+              setShowSideBar(true);
+
+              console.log("click");
+            }}
           >
             <i className='fa-solid fa-bars text-2xl'></i>
           </div>
@@ -200,7 +204,7 @@ const ChatComponent: React.FC = () => {
             </span>
           </div>
         </div>
-        <div className='flex flex-row gap-2'>
+        <div className='hidden md:flex flex-row gap-2'>
           {themes.map((theme) => (
             <span
               className={`${theme} w-8 h-8 shadow-xl rounded-full border-2 cursor-pointer`}

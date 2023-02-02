@@ -14,6 +14,7 @@ export const useLogin = async (
     setLoading(true);
     const request = await api.post("/user/login", user);
     const response = request.data;
+    window.location.reload();
     dispatch(login({ ...response.user, token: response.token }));
     setLoginPage(false);
     localStorage.setItem("token", response.token);

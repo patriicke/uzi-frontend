@@ -25,14 +25,14 @@ const DashboardPage: React.FC = () => {
     {
       data: {
         title: "Rooms",
-        count: (databaseStatus as any)?.numberOfMessages
+        count: (databaseStatus as any)?.numberOfRooms
       },
       icon: faUser
     },
     {
       data: {
         title: "Messages",
-        count: (databaseStatus as any)?.numberOfRooms
+        count: (databaseStatus as any)?.numberOfMessages
       },
       icon: faUser
     }

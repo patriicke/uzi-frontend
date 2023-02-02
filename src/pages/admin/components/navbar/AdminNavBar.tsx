@@ -40,7 +40,7 @@ const AdminNavBar = () => {
     <header className='db bg-primary-500 h-20'>
       <div className='e x db me sg ch h-full'>
         <button
-          className='d j h/2 qa ya fb xb/2 dc fc oc gf hover:border hover:bg-slate-400 duration-200 xl:hidden'
+          className='d j h/2 qa ya fb xb/2 dc fc oc gf hover:border hover:bg-slate-400 duration-200 lg:hidden'
           onClick={() => {
             toggleSidebar();
           }}

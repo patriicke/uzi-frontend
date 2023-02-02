@@ -19,7 +19,6 @@ const SideBarResponsive: React.FC = () => {
   const [finalRooms, setFinalRooms] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const dispatch = useDispatch();
-  const [showSideBar, setShowSideBar] = useState<boolean>(false);
   const { logoutUser } = useLogout();
 
   const {
@@ -28,7 +27,9 @@ const SideBarResponsive: React.FC = () => {
     setRooms,
     rooms,
     setCreateRoomShow,
-    setLoginPage
+    setLoginPage,
+    showSideBar,
+    setShowSideBar
   } = useContext<ICommonContext>(CommonContext);
 
   const months = [
@@ -80,6 +81,7 @@ const SideBarResponsive: React.FC = () => {
   });
 
   async function getRooms() {
+    if (!localStorage.getItem("token")) return;
     const request = await api.get("/room/all");
     const response = await request.data;
     setRooms(response.rooms);
@@ -103,6 +105,7 @@ const SideBarResponsive: React.FC = () => {
   }, []);
 
   const getAllMessages = async () => {
+    if (!localStorage.getItem("token")) return;
     try {
       const request = await api.get("/message/all");
       const response = await request.data;

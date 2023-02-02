@@ -47,8 +47,6 @@ const App = () => {
     whoAmI();
   }, []);
 
-  const { userData } = useSelector((state: any) => state.user);
-
   return (
     <CommonContext.Provider
       value={{

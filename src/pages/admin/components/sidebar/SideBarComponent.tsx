@@ -9,8 +9,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
+import { useLogout } from "../../../../hooks/user";
 
 export type ISideBarLinksType = {
   name: string;
@@ -51,6 +53,10 @@ const SideBarComponent: React.FC = () => {
     });
   }, [window.location.href]);
 
+  const { userData } = useSelector((state: any) => state.user);
+
+  const { logoutUser } = useLogout();
+
   return (
     <div className='c f g s qa sa db pb ac gc mc bd tf wf zg vb'>
       <div>
@@ -64,7 +70,7 @@ const SideBarComponent: React.FC = () => {
           </div>
           <div>
             <p className='bf ef'>Hello 👋</p>
-            <h6 className='xe bf ef'>NDAYAMBAJE</h6>
+            <h6 className='xe bf ef'>{userData.fullname}</h6>
           </div>
         </div>
         <div className='_ ud he'>
@@ -156,7 +162,9 @@ const SideBarComponent: React.FC = () => {
           <Link to='#' className='ye bf ef cg'>
             Terms
           </Link>
-          <button className='ye bf ef cg'>Log out</button>
+          <button className='ye bf ef cg' onClick={logoutUser}>
+            Log out
+          </button>
         </div>
       </div>
     </div>

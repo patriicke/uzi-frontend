@@ -21,7 +21,7 @@ export interface ICommonContext {
   createRoomShow: any;
   setCreateRoomShow: any;
   showSideBar: any;
-  setShowSideBar: any;
+  setShowSideBar: Function;
   fullScreen: boolean;
   setFullScreen: Function;
   createPublicUserShow: boolean;

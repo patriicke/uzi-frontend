@@ -32,8 +32,6 @@ const SideBar: React.FC = () => {
 
   const { rooms } = useSelector((state: any) => state.room);
 
-  console.log(rooms);
-
   const months = [
     "Jan",
     "Feb",
@@ -86,6 +84,7 @@ const SideBar: React.FC = () => {
   });
 
   async function getRooms() {
+    if (!localStorage.getItem("token")) return;
     const request = await api.get("/room/all");
     const response = await request.data;
     dispatch(setRoomsRedux(response.rooms));
@@ -108,6 +107,7 @@ const SideBar: React.FC = () => {
   }, []);
 
   const getAllMessages = async () => {
+    if (!localStorage.getItem("token")) return;
     try {
       const request = await api.get("/message/all");
       const response = await request.data;
