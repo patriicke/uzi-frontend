@@ -24,9 +24,12 @@ export const useLogout = () => {
   const dispatch = useDispatch();
   const logoutUser = () => {
     try {
-      dispatch(logout());
-      dispatch(resetRoom());
-      localStorage.removeItem("token");
+      if (localStorage.getItem("token")) {
+        dispatch(logout());
+        dispatch(resetRoom());
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      }
     } catch (error) {
       console.log(error);
     }

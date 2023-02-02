@@ -1,9 +1,11 @@
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
 import { ISideBarContext, SidebarContext } from "../../../../context/sidebar";
+import { useLogout } from "../../../../hooks/user";
 import { SideBarLinks } from "../sidebar/SideBarComponent";
 
 const ForwardArrow = () => {
@@ -31,6 +33,9 @@ const AdminNavBar = () => {
     });
   }, [window.location.href]);
 
+  const { userData } = useSelector((state: any) => state.user);
+
+  const { logoutUser } = useLogout();
   return (
     <header className='db bg-primary-500 h-20'>
       <div className='e x db me sg ch h-full'>
@@ -137,7 +142,7 @@ const AdminNavBar = () => {
                       alt='avatar'
                       className='_a ib nc vc yc _c sd td'
                     />
-                    <span className='pe qe ye bf gf'>Patrick</span>
+                    <span className='pe qe ye bf gf'>{userData?.username}</span>
                     <span>
                       <svg
                         width={14}
@@ -156,15 +161,24 @@ const AdminNavBar = () => {
                     </span>
                   </div>
                   <div className='b d o l ha jb jc oc bd vd qf uf wf hg ig jg'>
-                    <Link to='#' className='oa oc yd de ye bf ef zf cg'>
+                    <Link
+                      to='#'
+                      className='oa oc yd de ye bf ef zf cg hover:text-primary-500'
+                    >
                       Account Settings
                     </Link>
-                    <Link to='#' className='oa oc yd de ye bf ef zf cg'>
+                    <Link
+                      to={"/admin"}
+                      className='oa oc yd de ye bf ef zf cg hover:text-primary-500'
+                    >
                       Dashboard
                     </Link>
-                    <Link to='#' className='oa oc yd de ye bf ef zf cg'>
+                    <button
+                      onClick={logoutUser}
+                      className='oa oc yd de ye bf ef zf cg hover:text-primary-500'
+                    >
                       Sign Out
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>

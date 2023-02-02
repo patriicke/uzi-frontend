@@ -43,6 +43,7 @@ const App = () => {
   const { whoAmI } = useWhoAmI();
 
   useEffect(() => {
+    if (!localStorage.getItem("token")) return;
     whoAmI();
   }, []);
 

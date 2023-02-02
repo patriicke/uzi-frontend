@@ -1,21 +1,16 @@
 import {
-  faCalendarCheck,
-  faCircleQuestion,
-  faFileCircleCheck,
+  faEnvelope,
   faGear,
-  faGears,
   faHouse,
-  faTags,
   faTrash,
   faUser,
   faUserGroup,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
-import { ISideBarContext, SidebarContext } from "../../../../context/sidebar";
 
 export type ISideBarLinksType = {
   name: string;
@@ -36,12 +31,12 @@ export const SideBarLinks: ISideBarLinksType[] = [
   },
   {
     name: "Rooms",
-    icon: faTags,
+    icon: faUserGroup,
     href: "/admin/rooms"
   },
   {
     name: "Messages",
-    icon: faTags,
+    icon: faEnvelope,
     href: "/admin/messages"
   }
 ];

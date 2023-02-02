@@ -12,7 +12,7 @@ const AdminLayout = () => {
         <div className='c f g t sa db dd pd xg vb' />
         <div className='db bh'>
           <AdminNavBar />
-          <section className='bg-white py-20 lg:py-9 px-3 overflow-x-hidden'>
+          <section className='bg-white py-5 lg:py-9 px-3 overflow-x-hidden'>
             <Outlet />
           </section>
         </div>
