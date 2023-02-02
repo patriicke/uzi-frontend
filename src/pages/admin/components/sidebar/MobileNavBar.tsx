@@ -1,13 +1,7 @@
 import {
-  faCalendarCheck,
-  faCircleQuestion,
-  faFileCircleCheck,
   faGear,
-  faHouse,
-  faTags,
   faTrash,
   faUser,
-  faUserGroup,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,50 +9,13 @@ import { FC, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
 import { ISideBarContext, SidebarContext } from "../../../../context/sidebar";
+import { SideBarLinks } from "./SideBarComponent";
 
 export type ISideBarLinksType = {
   name: string;
   icon: IconDefinition;
   href: string;
 };
-
-export const SideBarLinks: ISideBarLinksType[] = [
-  {
-    name: "Dashboard",
-    icon: faHouse,
-    href: "/admin"
-  },
-  {
-    name: "User",
-    icon: faUser,
-    href: "/admin/user"
-  },
-  {
-    name: "Category",
-    icon: faTags,
-    href: "/admin/category"
-  },
-  {
-    name: "Client",
-    icon: faUserGroup,
-    href: "/admin/client"
-  },
-  {
-    name: "Question",
-    icon: faCircleQuestion,
-    href: "/admin/question"
-  },
-  {
-    name: "Answer",
-    icon: faFileCircleCheck,
-    href: "/admin/answer"
-  },
-  {
-    name: "Appointment",
-    icon: faCalendarCheck,
-    href: "/admin/appointment"
-  }
-];
 
 const MobileSideBarComponent: FC = () => {
   const { isSidebarOpen, closeSidebar, toggleSidebar } =
@@ -150,7 +107,7 @@ const MobileSideBarComponent: FC = () => {
                       {currentLink === index ? (
                         <Link
                           to={href}
-                          className='e aa qa dc oc zd yd xe bf ef wf xf bg bg-primary text-white'
+                          className='e aa qa dc oc zd yd xe bf ef wf xf bg bg-primary-500 text-white'
                         >
                           <span className='ke'>
                             <FontAwesomeIcon icon={icon} className='text-lg' />

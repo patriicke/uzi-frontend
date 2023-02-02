@@ -35,9 +35,9 @@ const UserDefineRouter = () => {
       element: <AdminLayout />,
       children: [
         { index: true, element: <> Admin Dashboard </> },
-        { path: "user", element: <> Admin Users </> },
-        { path: "room", element: <> Admin Rooms </> },
-        { path: "message", element: <> Admin Messages </> }
+        { path: "users", element: <> Admin Users </> },
+        { path: "rooms", element: <> Admin Rooms </> },
+        { path: "messages", element: <> Admin Messages </> }
       ]
     },
     {

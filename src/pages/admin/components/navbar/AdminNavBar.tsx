@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
 import { ISideBarContext, SidebarContext } from "../../../../context/sidebar";
-import { SideBarLinks } from "../sidebar/MobileNavBar";
+import { SideBarLinks } from "../sidebar/SideBarComponent";
 
 const ForwardArrow = () => {
   return (
@@ -105,7 +105,9 @@ const AdminNavBar = () => {
               <div className='qa dc ec'>
                 <div className='e z ra ng'>
                   <span className='e oa'>
-                    <span className='d m n oa nc fd ce _e bf gf'>3</span>
+                    <span className='d m n oa nc fd ce _e bf gf bg-white text-primary-500'>
+                      3
+                    </span>
                     <svg
                       width={20}
                       height={20}

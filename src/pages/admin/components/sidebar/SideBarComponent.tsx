@@ -3,6 +3,7 @@ import {
   faCircleQuestion,
   faFileCircleCheck,
   faGear,
+  faGears,
   faHouse,
   faTags,
   faTrash,
@@ -14,8 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ICONS } from "../../../../assets";
-import { CommonContext } from "../../../../context";
-import { ICommonContext } from "../../../../types/common.context";
+import { ISideBarContext, SidebarContext } from "../../../../context/sidebar";
 
 export type ISideBarLinksType = {
   name: string;
@@ -23,49 +23,31 @@ export type ISideBarLinksType = {
   href: string;
 };
 
+export const SideBarLinks: ISideBarLinksType[] = [
+  {
+    name: "Dashboard",
+    icon: faHouse,
+    href: "/admin"
+  },
+  {
+    name: "Users",
+    icon: faUser,
+    href: "/admin/users"
+  },
+  {
+    name: "Rooms",
+    icon: faTags,
+    href: "/admin/rooms"
+  },
+  {
+    name: "Messages",
+    icon: faTags,
+    href: "/admin/messages"
+  }
+];
+
 const SideBarComponent: React.FC = () => {
   const [currentLink, setCurrentLink] = useState<number>(0);
-
-  const { setIsSidebarOpen, isSidebarOpen } =
-    useContext<ICommonContext>(CommonContext);
-
-  const SideBarLinks: ISideBarLinksType[] = [
-    {
-      name: "Dashboard",
-      icon: faHouse,
-      href: "/admin"
-    },
-    {
-      name: "User",
-      icon: faUser,
-      href: "/admin/user"
-    },
-    {
-      name: "Category",
-      icon: faTags,
-      href: "/admin/category"
-    },
-    {
-      name: "Client",
-      icon: faUserGroup,
-      href: "/admin/client"
-    },
-    {
-      name: "Question",
-      icon: faCircleQuestion,
-      href: "/admin/question"
-    },
-    {
-      name: "Answer",
-      icon: faFileCircleCheck,
-      href: "/admin/answer"
-    },
-    {
-      name: "Appointment",
-      icon: faCalendarCheck,
-      href: "/admin/appointment"
-    }
-  ];
 
   useEffect(() => {
     SideBarLinks.map(({ href }, index) => {
@@ -135,7 +117,7 @@ const SideBarComponent: React.FC = () => {
                     {currentLink === index ? (
                       <Link
                         to={href}
-                        className='e aa qa dc oc zd yd xe bf ef wf xf bg bg-primary text-white'
+                        className='e aa qa dc oc zd yd xe bf ef wf xf bg bg-primary-500 text-white hover:bg-primary-500'
                       >
                         <span className='ke'>
                           <FontAwesomeIcon icon={icon} className='text-lg' />
@@ -145,7 +127,7 @@ const SideBarComponent: React.FC = () => {
                     ) : (
                       <Link
                         to={href}
-                        className='e aa qa dc oc zd yd xe bf ef wf xf bg'
+                        className='e aa qa dc oc zd yd xe bf ef wf xf bg hover:bg-primary-500'
                       >
                         <span className='ke'>
                           <FontAwesomeIcon icon={icon} className='text-lg' />
