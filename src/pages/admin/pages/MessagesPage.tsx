@@ -2,7 +2,7 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { format } from "../../../utils";
-import { getAllMessages } from "../hooks";
+import { deleteMessage, getAllMessages } from "../hooks";
 
 const MessagesPage: React.FC = () => {
   const [messages, setMessages] = useState();
@@ -84,11 +84,12 @@ const MessagesPage: React.FC = () => {
                     focusable='false'
                     data-prefix='fas'
                     data-icon='trash'
-                    className='svg-inline--fa fa-trash '
+                    className='svg-inline--fa fa-trash cursor-pointer hover:text-primary-500'
                     role='img'
                     xmlns='http://www.w3.org/2000/svg'
                     viewBox='0 0 448 512'
                     width={14}
+                    onClick={() => deleteMessage(message._id, setMessages)}
                   >
                     <path
                       fill='currentColor'
