@@ -1,5 +1,4 @@
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { api } from "../api/api";
 import { resetRoom } from "../redux/slices/roomSlice";
 import { logout, updateUserRedux } from "../redux/slices/userSlice";

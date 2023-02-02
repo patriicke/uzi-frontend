@@ -25,7 +25,6 @@ const SideBar: React.FC = () => {
     socket,
     setMembers,
     currentRoom,
-    setCurrentRoom,
     setCreateRoomShow,
     setLoginPage,
     fullScreen
@@ -75,12 +74,12 @@ const SideBar: React.FC = () => {
   }, [rooms]);
 
   useEffect(() => {
-    if (user) {
+    if (user.token) {
       getRooms();
       joinRoom(searchRoom);
       socket.emit("new-user");
     }
-  }, []);
+  }, [user]);
 
   socket.off("new-user").on("new-user", (payload: any) => {
     setMembers(payload);

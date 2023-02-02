@@ -1,0 +1,5 @@
+export enum ROLE {
+  PUBLIC = "PUBLIC",
+  ADMIN = "ADMIN",
+  SUPERADMIN = "SUPERADMIN"
+}

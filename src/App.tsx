@@ -4,7 +4,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useParams
+  useParams,
+  Navigate
 } from "react-router-dom";
 import NotFound from "./pages/NotFound/NotFound";
 import HomePage from "./pages/Home/HomePage";
@@ -18,14 +19,15 @@ import CreateRoomModal from "./components/Modal/CreateRoomModal";
 import SideBarResponsive from "./components/SideBar/SideBarResponsive";
 import { useWhoAmI } from "./hooks/user";
 import CreatePublicUserModal from "./components/Modal/CreatePublicUserModal";
+import { useSelector } from "react-redux";
+import UserDefineRouter from "./Routes";
 export const ProductContext: any = createContext({});
 
 const App = () => {
-  const { room } = useParams();
   const [loginPage, setLoginPage] = useState<boolean>(false);
   const [signup, setSignup] = useState<string>("login");
   const [rooms, setRooms] = useState<[]>([]);
-  const [currentRoom, setCurrentRoom] = useState(room);
+  const [currentRoom, setCurrentRoom] = useState<number>(0);
   const [members, setMembers] = useState<[]>([]);
   const [messages, setMessages] = useState<[]>([]);
   const [privateMemberMessages, setPrivateMemberMessages] = useState<[]>([]);
@@ -36,15 +38,15 @@ const App = () => {
   const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [createPublicUserShow, setCreatePublicUserShow] =
     useState<boolean>(false);
-  const { whoAmI } = useWhoAmI();
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    setCurrentRoom(room);
-  });
+  const { whoAmI } = useWhoAmI();
 
   useEffect(() => {
     whoAmI();
   }, []);
+
+  const { userData } = useSelector((state: any) => state.user);
 
   return (
     <CommonContext.Provider
@@ -75,7 +77,9 @@ const App = () => {
         fullScreen,
         setFullScreen,
         createPublicUserShow,
-        setCreatePublicUserShow
+        setCreatePublicUserShow,
+        isSidebarOpen,
+        setIsSidebarOpen
       }}
     >
       <>
@@ -86,12 +90,7 @@ const App = () => {
           } overflow-auto h-screen min-h-screen overflow-x-hidden`}
         >
           <Router>
-            <Routes>
-              <Route path='/' element={<HomePage />} />
-              <Route path='/select' element={<SelectRoom />} />
-              <Route path='/chat/:room' element={<ChatInterface />} />
-              <Route path='*' element={<NotFound />} />
-            </Routes>
+            <UserDefineRouter />
             <SideBarResponsive />
           </Router>
         </div>

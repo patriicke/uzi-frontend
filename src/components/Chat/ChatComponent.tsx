@@ -32,7 +32,9 @@ const ChatComponent: React.FC = () => {
 
   const messageEndRef: any = useRef(null);
 
-  setCurrentRoom(searchRoom);
+  useEffect(() => {
+    setCurrentRoom(searchRoom);
+  });
 
   useEffect(() => {
     scrollToBottom();
@@ -169,7 +171,33 @@ const ChatComponent: React.FC = () => {
               {rooms.filter((room: any) => room.roomCode == searchRoom)[0]
                 ?.roomName ?? ""}
             </span>
-            <span className='text-gray-500 text-sm'>#{searchRoom}</span>
+            <span className='text-gray-500 text-sm'>
+              #{searchRoom}{" "}
+              {rooms.filter((room: any) => room.roomCode == searchRoom)[0]
+                ?.access ? (
+                <span className='font-semibold'>
+                  (
+                  {
+                    rooms.filter((room: any) => room.roomCode == searchRoom)[0]
+                      ?.access
+                  }
+                  )
+                </span>
+              ) : (
+                ""
+              )}
+              <span className='pl-2 font-bold'>
+                {rooms
+                  .filter((room: any) => room.roomCode == searchRoom)[0]
+                  ?.users?.find(
+                    (currentRoom: any) =>
+                      currentRoom.userId == user._id &&
+                      currentRoom.role === "ADMIN"
+                  )
+                  ? "GROUP ADMIN"
+                  : ""}
+              </span>
+            </span>
           </div>
         </div>
         <div className='flex flex-row gap-2'>

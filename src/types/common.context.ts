@@ -26,4 +26,6 @@ export interface ICommonContext {
   setFullScreen: Function;
   createPublicUserShow: boolean;
   setCreatePublicUserShow: Function;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: Function;
 }
