@@ -10,6 +10,7 @@ const DashboardPage: React.FC = () => {
     const data = await getDataBaseStatus();
     setDatabaseStatus(data);
   };
+
   useEffect(() => {
     getDatabase();
   }, []);
