@@ -21,6 +21,7 @@ const RoomsPage: React.FC = () => {
       <table className='w-full overflow-x-scroll'>
         <thead className='w-full'>
           <tr>
+            <th className='border py-3 font-medium text-sm text-gray-500'>#</th>
             <th className='border py-3 font-medium text-sm text-gray-500'>
               ROOM NAME
             </th>
@@ -42,8 +43,13 @@ const RoomsPage: React.FC = () => {
           </tr>
         </thead>
         <tbody className='w-full'>
-          {(rooms as any)?.map((room: any) => (
+          {(rooms as any)?.map((room: any, index: number) => (
             <tr key={room._id}>
+              <td className='border py-3 font-medium text-sm text-gray-500 items-center'>
+                <span className='w-full flex items-center justify-center px-2'>
+                  {index + 1}
+                </span>
+              </td>
               <td className='border py-3 font-medium text-sm text-gray-500 items-center'>
                 <span className='w-full flex items-center justify-center'>
                   {room.roomName}

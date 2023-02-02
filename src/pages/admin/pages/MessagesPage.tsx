@@ -6,6 +6,7 @@ import { deleteMessage, getAllMessages } from "../hooks";
 
 const MessagesPage: React.FC = () => {
   const [messages, setMessages] = useState();
+  const [currentSkip, setCurentSkip] = useState(0);
 
   const getMessages = async () => {
     const data = await getAllMessages();
@@ -16,11 +17,33 @@ const MessagesPage: React.FC = () => {
     getMessages();
   }, []);
 
+  function onClickFirstPage() {
+    setCurentSkip(0);
+  }
+
+  function onClickPreviousPage() {
+    if (currentSkip == 0) return;
+    setCurentSkip(currentSkip - 10);
+  }
+
+  function onClickPage(page: number) {
+    setCurentSkip(page);
+  }
+
+  function onClickNextPage() {
+    if (currentSkip == 100) return;
+    setCurentSkip(currentSkip + 10);
+  }
+  function onClickLastPage() {
+    setCurentSkip(90);
+  }
+
   return (
     <div className='p-2'>
       <table className='w-full overflow-x-scroll'>
         <thead className='w-full'>
           <tr>
+            <th className='border py-3 font-medium text-sm text-gray-500'>#</th>
             <th className='border py-3 font-medium text-sm text-gray-500'>
               MESSAGE CONTENT
             </th>
@@ -45,8 +68,13 @@ const MessagesPage: React.FC = () => {
           </tr>
         </thead>
         <tbody className='w-full'>
-          {(messages as any)?.map((message: any) => (
+          {(messages as any)?.map((message: any, index: number) => (
             <tr key={message._id}>
+              <td className='border py-3 font-medium text-sm text-gray-500 items-center'>
+                <span className='w-full flex items-center justify-center px-2'>
+                  {index + 1}
+                </span>
+              </td>
               <td className='border py-3 font-medium text-sm text-gray-500 items-center'>
                 <span className='w-full flex items-center justify-center'>
                   {message.content}
@@ -103,23 +131,45 @@ const MessagesPage: React.FC = () => {
           ))}
         </tbody>
       </table>
-      <ul className='flex gap-2 py-3 justify-end'>
-        <li className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white'>
-          First
-        </li>
-        <li className='p-2 px-4 rounded-md cursor-pointer bg-primary-500 text-white'>
-          1
-        </li>
-        <li className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white'>
-          Previous
-        </li>
-        <li className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white'>
-          Next
-        </li>
-        <li className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white'>
-          Last
-        </li>
-      </ul>
+      <div className='flex items-center justify-between'>
+        <ul>
+          <li className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white font-medium text-sm'>
+            0 - 10 of 100 messages
+          </li>
+        </ul>
+        <ul className='flex gap-2 py-3'>
+          <li
+            className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white text-sm font-medium'
+            onClick={onClickFirstPage}
+          >
+            First
+          </li>
+          <li
+            className='p-2 px-4 rounded-md cursor-pointer bg-primary-500 text-white'
+            onClick={() => onClickPage(1)}
+          >
+            1
+          </li>
+          <li
+            className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white text-sm font-medium'
+            onClick={onClickPreviousPage}
+          >
+            Previous
+          </li>
+          <li
+            className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white text-sm font-medium'
+            onClick={onClickNextPage}
+          >
+            Next
+          </li>
+          <li
+            className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white text-sm font-medium'
+            onClick={onClickLastPage}
+          >
+            Last
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };

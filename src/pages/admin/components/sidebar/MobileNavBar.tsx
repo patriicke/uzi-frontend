@@ -62,7 +62,7 @@ const MobileSideBarComponent: FC = () => {
             </div>
             <div>
               <p className='bf ef'>Hello 👋</p>
-              <h6 className='xe bf ef'>{userData.fullname}</h6>
+              <h6 className='xe bf ef'>{(userData.fullname as string).split(" ")[0]}</h6>
             </div>
           </div>
           <div className='_ ud he'>

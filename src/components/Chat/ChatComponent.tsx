@@ -74,7 +74,7 @@ const ChatComponent: React.FC = () => {
   const todayDate = getFormattedDate();
 
   socket.off("room-messages").on("room-messages", (roomMessages: any) => {
-    console.log("roommessages");
+    console.log(roomMessages);
     setMessages(roomMessages);
   });
 
@@ -85,7 +85,7 @@ const ChatComponent: React.FC = () => {
     const minutes =
       today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
     const time = today.getHours() + ":" + minutes;
-    const roomId = currentRoom;
+    const roomId = searchRoom;
     socket.emit("message-room", roomId, message, user, time, todayDate);
     setMessage("");
   }

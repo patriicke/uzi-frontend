@@ -56,11 +56,6 @@ const SideBar: React.FC = () => {
   };
 
   function joinRoom(room: any) {
-    if (!user) {
-      return alert("Please login");
-    }
-    console.log(room);
-    console.log("currentRoom", currentRoom);
     socket.emit("join-room", {
       roomToJoin: room,
       currentRoom: currentRoom
