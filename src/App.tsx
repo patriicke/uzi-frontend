@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
   useParams
 } from "react-router-dom";
 import NotFound from "./pages/NotFound/NotFound";
@@ -16,7 +15,6 @@ import SelectRoom from "./pages/Select/SelectRoom";
 import { socket } from "./context";
 import ChatInterface from "./pages/Chat/ChatInterface";
 import CreateRoomModal from "./components/Modal/CreateRoomModal";
-import { useDispatch } from "react-redux";
 import SideBarResponsive from "./components/SideBar/SideBarResponsive";
 import { useWhoAmI } from "./hooks/user";
 import CreatePublicUserModal from "./components/Modal/CreatePublicUserModal";
@@ -38,10 +36,15 @@ const App = () => {
   const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [createPublicUserShow, setCreatePublicUserShow] =
     useState<boolean>(false);
+  const { whoAmI } = useWhoAmI();
 
   useEffect(() => {
     setCurrentRoom(room);
-  }, [room]);
+  });
+
+  useEffect(() => {
+    whoAmI();
+  }, []);
 
   return (
     <CommonContext.Provider

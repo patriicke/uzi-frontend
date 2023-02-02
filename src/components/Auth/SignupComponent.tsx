@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { CommonContext } from "../../context";
 import { uploadImage, useSignup } from "../../hooks";
@@ -23,7 +23,7 @@ const SignupComponent: React.FC<{
   const [imageUrl, setImageUrl] = useState<any>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const toastId: any = useRef(null);
-
+  const { userData } = useSelector((state: any) => state.user);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setLoading(true);

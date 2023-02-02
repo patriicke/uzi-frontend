@@ -6,14 +6,15 @@ import { logout, updateUserRedux } from "../redux/slices/userSlice";
 
 export const useWhoAmI = () => {
   const dispatch = useDispatch();
+  const { logoutUser } = useLogout();
   const whoAmI = async (): Promise<any> => {
     try {
       const response = await api.get("/user/whoami");
       const data = await response.data;
-      console.log(data);
       dispatch(updateUserRedux({ ...data.user, token: data.access_token }));
       localStorage.setItem("token", data.access_token);
     } catch (error) {
+      logoutUser();
       console.log(error);
     }
   };
@@ -22,13 +23,11 @@ export const useWhoAmI = () => {
 
 export const useLogout = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const logoutUser = () => {
     try {
       dispatch(logout());
       dispatch(resetRoom());
       localStorage.removeItem("token");
-      window.location.replace("/");
     } catch (error) {
       console.log(error);
     }

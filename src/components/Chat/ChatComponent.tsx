@@ -8,21 +8,21 @@ import { sender } from "../../hooks";
 import { api } from "../../api/api";
 import { filterMessage } from "../../utils/filter.message";
 import { ICommonContext } from "../../types/common.context";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ICONS } from "../../assets";
-import { ROOM_VISIBILITY } from "../../lib/romm.access";
 
 const ChatComponent: React.FC = () => {
-  const { room } = useParams();
+  const { room: searchRoom } = useParams();
+
   const [message, setMessage] = useState("");
   const user = useSelector((state: any) => state.user.userData);
   const [users, setUsers] = useState([]);
 
   const {
     socket,
-    currentRoom,
-    setCurrentRoom,
     setMessages,
+    setCurrentRoom,
+    currentRoom,
     messages,
     rooms,
     setShowSideBar,
@@ -32,9 +32,7 @@ const ChatComponent: React.FC = () => {
 
   const messageEndRef: any = useRef(null);
 
-  useEffect(() => {
-    setCurrentRoom(room);
-  });
+  setCurrentRoom(searchRoom);
 
   useEffect(() => {
     scrollToBottom();
@@ -74,6 +72,7 @@ const ChatComponent: React.FC = () => {
   const todayDate = getFormattedDate();
 
   socket.off("room-messages").on("room-messages", (roomMessages: any) => {
+    console.log("roommessages");
     setMessages(roomMessages);
   });
 
@@ -90,11 +89,13 @@ const ChatComponent: React.FC = () => {
   }
 
   const [showEmojiFile, setShowEmojiFile] = useState(false);
+
   const onEmojiClick = (event: any, emojiData: any) => {
     let msg = message;
     msg = msg + `${emojiData.emoji}`;
     setMessage(msg);
   };
+
   const emojiElement: any = useRef(null);
 
   useEffect(() => {
@@ -154,10 +155,10 @@ const ChatComponent: React.FC = () => {
           </div>
           <img
             src={
-              rooms.filter((room: any) => room.roomCode == currentRoom)[0]
+              rooms.filter((room: any) => room.roomCode == searchRoom)[0]
                 ?.roomImage === "icon"
                 ? ICONS.RoomIcon
-                : rooms.filter((room: any) => room.roomCode == currentRoom)[0]
+                : rooms.filter((room: any) => room.roomCode == searchRoom)[0]
                     ?.roomImage
             }
             alt='RoomImage'
@@ -165,10 +166,10 @@ const ChatComponent: React.FC = () => {
           />
           <div className='flex flex-col'>
             <span className='font-semibold text-xl'>
-              {rooms.filter((room: any) => room.roomCode == currentRoom)[0]
+              {rooms.filter((room: any) => room.roomCode == searchRoom)[0]
                 ?.roomName ?? ""}
             </span>
-            <span className='text-gray-500 text-sm'>#{currentRoom}</span>
+            <span className='text-gray-500 text-sm'>#{searchRoom}</span>
           </div>
         </div>
         <div className='flex flex-row gap-2'>

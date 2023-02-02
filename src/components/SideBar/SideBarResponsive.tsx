@@ -11,8 +11,8 @@ import { useLogout } from "../../hooks/user";
 import { ICommonContext } from "../../types/common.context";
 
 const SideBarResponsive: React.FC = () => {
+  const { room: currentRoom } = useParams();
   const SIDEBAR_ELEMENT: any = useRef(null);
-  const { room: searchRoom } = useParams();
   const user = useSelector((state: any) => state.user.userData);
   const [showLogout, setShowLogout] = useState(false);
   const [search, setSearch] = useState("");
@@ -25,10 +25,8 @@ const SideBarResponsive: React.FC = () => {
   const {
     socket,
     setMembers,
-    setCurrentRoom,
     setRooms,
     rooms,
-    currentRoom,
     setCreateRoomShow,
     setLoginPage
   } = useContext<ICommonContext>(CommonContext);
@@ -64,15 +62,13 @@ const SideBarResponsive: React.FC = () => {
       roomToJoin: room,
       currentRoom: currentRoom
     });
-    setCurrentRoom(room);
   }
 
   useEffect(() => {
     if (user) {
-      setCurrentRoom(searchRoom);
       getRooms();
       socket.emit("join-room", {
-        roomToJoin: searchRoom,
+        roomToJoin: currentRoom,
         currentRoom: currentRoom
       });
       socket.emit("new-user");
@@ -89,10 +85,6 @@ const SideBarResponsive: React.FC = () => {
     setRooms(response.rooms);
     dispatch(setRoomsRedux(response.rooms));
   }
-
-  useEffect(() => {
-    setFinalRooms(rooms);
-  }, [rooms, searchRoom]);
 
   useEffect(() => {
     if (!search) {
@@ -183,7 +175,7 @@ const SideBarResponsive: React.FC = () => {
                 return (
                   <Link
                     className={`flex gap-2 items-center justify-between hover:bg-gray-200 p-1 px-2 pr-3 rounded-md cursor-pointer   ${
-                      searchRoom === room.roomCode && "bg-gray-300"
+                      currentRoom === room.roomCode && "bg-gray-300"
                     } duration-200`}
                     key={room._id}
                     to={`/chat/${room.roomCode}`}

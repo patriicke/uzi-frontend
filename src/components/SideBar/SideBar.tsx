@@ -12,6 +12,7 @@ import { useLogout } from "../../hooks/user";
 
 const SideBar: React.FC = () => {
   const { room: searchRoom } = useParams();
+
   const user = useSelector((state: any) => state.user.userData);
   const [showLogout, setShowLogout] = useState(false);
   const [search, setSearch] = useState("");
@@ -23,14 +24,16 @@ const SideBar: React.FC = () => {
   const {
     socket,
     setMembers,
-    setCurrentRoom,
-    setRooms,
-    rooms,
     currentRoom,
+    setCurrentRoom,
     setCreateRoomShow,
     setLoginPage,
     fullScreen
   } = useContext<ICommonContext>(CommonContext);
+
+  const { rooms } = useSelector((state: any) => state.room);
+
+  console.log(rooms);
 
   const months = [
     "Jan",
@@ -59,21 +62,22 @@ const SideBar: React.FC = () => {
     if (!user) {
       return alert("Please login");
     }
+    console.log(room);
+    console.log("currentRoom", currentRoom);
     socket.emit("join-room", {
       roomToJoin: room,
       currentRoom: currentRoom
     });
-    setCurrentRoom(room);
   }
 
   useEffect(() => {
+    setFinalRooms(rooms);
+  }, [rooms]);
+
+  useEffect(() => {
     if (user) {
-      setCurrentRoom(searchRoom);
       getRooms();
-      socket.emit("join-room", {
-        roomToJoin: searchRoom,
-        currentRoom: currentRoom
-      });
+      joinRoom(searchRoom);
       socket.emit("new-user");
     }
   }, []);
@@ -85,13 +89,8 @@ const SideBar: React.FC = () => {
   async function getRooms() {
     const request = await api.get("/room/all");
     const response = await request.data;
-    setRooms(response.rooms);
     dispatch(setRoomsRedux(response.rooms));
   }
-
-  useEffect(() => {
-    setFinalRooms(rooms);
-  }, [rooms, searchRoom]);
 
   useEffect(() => {
     if (!search) {
@@ -118,6 +117,7 @@ const SideBar: React.FC = () => {
       console.log(error);
     }
   };
+
   return (
     <div className={`${fullScreen && "hidden"}`}>
       <div
@@ -127,7 +127,7 @@ const SideBar: React.FC = () => {
           <img src={Logo} alt='logo' className='w-8' />
           <h1 className='text-primary-500 text-xl font-semibold'>Uzi Chat</h1>
         </Link>
-        <div className='flex flex-col gap-2 overflow-auto'>
+        <div className='flex flex-col gap-2 overflow-auto h-[87%]'>
           <div className='flex justify-between px-2 items-center'>
             <h1 className='text-lg font-semibold'>Rooms</h1>
             {user.token && user.role !== "PUBLIC" && (
@@ -159,7 +159,7 @@ const SideBar: React.FC = () => {
                 return (
                   <Link
                     className={`flex gap-2 items-center justify-between hover:bg-gray-200 p-1 px-2 pr-3 rounded-md cursor-pointer   ${
-                      searchRoom === room.roomCode && "bg-gray-300"
+                      currentRoom === room.roomCode && "bg-gray-300"
                     } duration-200`}
                     key={room._id}
                     to={`/chat/${room.roomCode}`}

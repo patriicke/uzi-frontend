@@ -10,7 +10,7 @@ const roomSlice = createSlice({
       state.rooms = payload;
     },
     addRoom: (state: any, action: any) => {
-      state.rooms = [...state.rooms, action.payload];
+      state.rooms = [action.payload, ...state.rooms];
     },
     resetRoom: (state: any) => {
       state.rooms = [];

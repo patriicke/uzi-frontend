@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { api } from "../../api/api";
 import { CommonContext } from "../../context";
@@ -25,6 +25,7 @@ const CreateRoomModal: React.FC = () => {
   const [access, setAccess] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const toastId: any = useRef(null);
+  const { userData } = useSelector((state: any) => state.user);
   const uploadImageFn = async () => {
     toastId.current = toast.loading("Uploading image...");
     try {
@@ -86,12 +87,13 @@ const CreateRoomModal: React.FC = () => {
         access
       });
       const response = await request.data;
-      console.log(response);
-      setRooms((rooms: any) => {
-        return [...rooms, { ...response.room }];
-      });
       dispatch(addRoom(response.room));
-      dispatch(updateUserRedux(response.user));
+      dispatch(
+        updateUserRedux({
+          ...userData,
+          rooms: [...userData.rooms, response.room]
+        })
+      );
       toast.success("Room created successfully!");
       setCreateRoomShow(false);
     } catch (error) {
