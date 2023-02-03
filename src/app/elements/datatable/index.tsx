@@ -38,7 +38,7 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
   const [paginate, setPaginate] = useState({
     pageSize: 10,
     pageNumber: 1,
-    pageCount: 9
+    pageCount: 1
   });
 
   const [currentSkip, setCurrentSkip] = useState<number>(0);
@@ -189,7 +189,7 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
       <div className='w-full flex items-center justify-between py-4 text-sm font-medium text-gray-600'>
         <div className='flex gap-2 items-center justify-between'>
           <span className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer hover:bg-primary-500 hover:text-white'>
-            {data.length === 0 ? 0 : paginate.pageNumber} - {paginate.pageCount}{" "}
+            {data.length === 0 ? 0 : paginate.pageNumber} - {paginate.pageSize}{" "}
             of {data.length}
           </span>
           <span>

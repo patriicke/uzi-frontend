@@ -23,7 +23,12 @@ export const format = {
       .forEach((element) =>
         result.push(element.charAt(0).toUpperCase() + element.slice(1))
       );
-
     return result.join(" ");
+  },
+  formatTime(time: string) {
+    let [minutes, seconds] = time.split(":");
+    minutes = minutes.padStart(2, "0");
+    seconds = seconds.padStart(2, "0");
+    return `${minutes}:${seconds}`;
   }
 };

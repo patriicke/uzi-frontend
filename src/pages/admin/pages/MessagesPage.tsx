@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataTable, TableColumn } from "../../../app/elements/datatable";
+import { format } from "../../../utils";
 import { AdminContext, IAdminContext } from "../context";
 import { deleteMessage, getAllMessages } from "../hooks";
 
@@ -7,6 +8,7 @@ export type IMessageType = {
   content: string;
   from: {
     email: string;
+    role: string;
   };
   socketId: string;
   time: string;
@@ -54,15 +56,15 @@ const MessagesPage: React.FC = () => {
     },
     {
       title: "SENDER ROLE",
-      cell: (message) => message.role
+      cell: (message) => message.from.role
     },
     {
       title: "SENT DATE",
-      cell: (message) => message.date
+      cell: (message) => format.humanDate(message.date)
     },
     {
       title: "MESSAGE TIME",
-      cell: (message) => message.time
+      cell: (message) => format.formatTime(message.time)
     }
   ];
 
