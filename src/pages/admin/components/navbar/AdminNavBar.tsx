@@ -74,8 +74,8 @@ const AdminNavBar = () => {
         </button>
         <div className='qa dc gc yd ah h-full'>
           <div className='qa db dc gc'>
-            <div className='z qa dc'>
-              <ul className='flex items-center'>
+            <div className='z qa dc '>
+              <ul className='items-center hidden sm:flex'>
                 <li className='flex items-center'>
                   <span className='flex items-center text-base font-semibold text-white hover:text-opacity-80'>
                     <span className='pr-2'>
