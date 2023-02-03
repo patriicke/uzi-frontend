@@ -28,15 +28,10 @@ const SideBar: React.FC = () => {
     setCurrentRoom,
     setCreateRoomShow,
     setLoginPage,
-    fullScreen,
-    setMessages
+    fullScreen
   } = useContext<ICommonContext>(CommonContext);
 
   const { rooms } = useSelector((state: any) => state.room);
-
-  socket.off("room-messages").on("room-messages", (roomMessages: any) => {
-    setMessages(roomMessages);
-  });
 
   const months = [
     "Jan",
@@ -62,11 +57,11 @@ const SideBar: React.FC = () => {
   };
 
   function joinRoom(roomToJoin: any) {
+    setCurrentRoom(roomToJoin);
     socket.emit("join-room", {
       roomToJoin,
       currentRoom
     });
-    setCurrentRoom(roomToJoin);
   }
 
   useEffect(() => {
@@ -75,9 +70,9 @@ const SideBar: React.FC = () => {
 
   useEffect(() => {
     if (user.token) {
-      setCurrentRoom(searchRoom);
       getRooms();
-      socket.emit("join-room", searchRoom);
+      joinRoom(searchRoom);
+      setCurrentRoom(searchRoom);
       socket.emit("new-user");
     }
   }, []);

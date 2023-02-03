@@ -17,14 +17,13 @@ const ChatComponent: React.FC = () => {
   const [message, setMessage] = useState("");
   const user = useSelector((state: any) => state.user.userData);
   const [users, setUsers] = useState([]);
+  const { rooms } = useSelector((state: any) => state.room);
 
   const {
     socket,
     setMessages,
     setCurrentRoom,
-    currentRoom,
     messages,
-    rooms,
     setShowSideBar,
     fullScreen,
     setFullScreen
@@ -152,8 +151,6 @@ const ChatComponent: React.FC = () => {
             className='cursor-pointer z-30 md:hidden'
             onClick={() => {
               setShowSideBar(true);
-
-              console.log("click");
             }}
           >
             <i className='fa-solid fa-bars text-2xl'></i>

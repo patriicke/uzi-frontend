@@ -11,8 +11,9 @@ import { useLogout } from "../../hooks/user";
 import { ICommonContext } from "../../types/common.context";
 
 const SideBarResponsive: React.FC = () => {
-  const { room: currentRoom } = useParams();
   const SIDEBAR_ELEMENT: any = useRef(null);
+  const { room: searchRoom } = useParams();
+
   const user = useSelector((state: any) => state.user.userData);
   const [showLogout, setShowLogout] = useState(false);
   const [search, setSearch] = useState("");
@@ -24,13 +25,15 @@ const SideBarResponsive: React.FC = () => {
   const {
     socket,
     setMembers,
-    setRooms,
-    rooms,
+    currentRoom,
+    setCurrentRoom,
     setCreateRoomShow,
     setLoginPage,
     showSideBar,
     setShowSideBar
   } = useContext<ICommonContext>(CommonContext);
+
+  const { rooms } = useSelector((state: any) => state.room);
 
   const months = [
     "Jan",
@@ -55,23 +58,23 @@ const SideBarResponsive: React.FC = () => {
     return `${months[month]} ${day}`;
   };
 
-  function joinRoom(room: any) {
-    if (!user) {
-      return alert("Please login");
-    }
+  function joinRoom(roomToJoin: any) {
+    setCurrentRoom(roomToJoin);
     socket.emit("join-room", {
-      roomToJoin: room,
-      currentRoom: currentRoom
+      roomToJoin,
+      currentRoom
     });
   }
 
   useEffect(() => {
-    if (user) {
+    setFinalRooms(rooms);
+  }, [rooms]);
+
+  useEffect(() => {
+    if (user.token) {
       getRooms();
-      socket.emit("join-room", {
-        roomToJoin: currentRoom,
-        currentRoom: currentRoom
-      });
+      joinRoom(searchRoom);
+      setCurrentRoom(searchRoom);
       socket.emit("new-user");
     }
   }, []);
@@ -84,7 +87,6 @@ const SideBarResponsive: React.FC = () => {
     if (!localStorage.getItem("token")) return;
     const request = await api.get("/room/all");
     const response = await request.data;
-    setRooms(response.rooms);
     dispatch(setRoomsRedux(response.rooms));
   }
 
@@ -128,7 +130,7 @@ const SideBarResponsive: React.FC = () => {
     <div
       className={`absolute z-50 top-0 ${
         showSideBar ? "translate-x-0" : "-translate-x-[20em]"
-      } duration-200`}
+      } duration-200 `}
       ref={SIDEBAR_ELEMENT}
     >
       <div

@@ -90,7 +90,7 @@ const App = () => {
         >
           <Router>
             <UserDefineRouter />
-            <SideBarResponsive />
+            {window.innerWidth > 400 && <SideBarResponsive />}
           </Router>
         </div>
         <ToastContainer
