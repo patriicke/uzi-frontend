@@ -46,6 +46,7 @@ const CreatePublicUserModal: React.FC = () => {
       localStorage.setItem("token", data.token);
       console.log(data.token);
       toast.success("You can now join different rooms!");
+      window.location.reload();
       setCreatePublicUserShow(false);
     } catch (error: any) {
       setError(error.response.data.message);
@@ -101,7 +102,7 @@ const CreatePublicUserModal: React.FC = () => {
             type='submit'
             disabled={loading}
           >
-            CREATE
+            {loading ? "LOADING..." : "CREATE"}
           </button>
         </div>
       </form>
