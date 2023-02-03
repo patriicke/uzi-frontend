@@ -49,10 +49,10 @@ export const useSignup = async (
     });
     const response = await request.data;
     dispatch(login({ ...response.user, token: response.token }));
-    console.log(response.token);
     setLoginPage(false);
     localStorage.setItem("token", response.token);
     toast.success("Account created successfully!");
+    window.location.reload();
   } catch (error: any) {
     setError(`${error.response.data.content}`);
     console.log(error);
