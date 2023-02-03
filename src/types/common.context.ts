@@ -7,7 +7,7 @@ export interface ICommonContext {
   rooms: any;
   setRooms: any;
   currentRoom: any;
-  setCurrentRoom: any;
+  setCurrentRoom: Function;
   members: any;
   setMembers: any;
   messages: any;

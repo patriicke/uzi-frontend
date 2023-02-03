@@ -27,7 +27,7 @@ const App = () => {
   const [loginPage, setLoginPage] = useState<boolean>(false);
   const [signup, setSignup] = useState<string>("login");
   const [rooms, setRooms] = useState<[]>([]);
-  const [currentRoom, setCurrentRoom] = useState<number>(0);
+  const [currentRoom, setCurrentRoom] = useState();
   const [members, setMembers] = useState<[]>([]);
   const [messages, setMessages] = useState<[]>([]);
   const [privateMemberMessages, setPrivateMemberMessages] = useState<[]>([]);

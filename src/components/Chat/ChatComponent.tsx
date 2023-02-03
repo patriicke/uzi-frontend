@@ -74,7 +74,6 @@ const ChatComponent: React.FC = () => {
   const todayDate = getFormattedDate();
 
   socket.off("room-messages").on("room-messages", (roomMessages: any) => {
-    console.log(roomMessages);
     setMessages(roomMessages);
   });
 

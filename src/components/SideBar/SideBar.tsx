@@ -25,12 +25,18 @@ const SideBar: React.FC = () => {
     socket,
     setMembers,
     currentRoom,
+    setCurrentRoom,
     setCreateRoomShow,
     setLoginPage,
-    fullScreen
+    fullScreen,
+    setMessages
   } = useContext<ICommonContext>(CommonContext);
 
   const { rooms } = useSelector((state: any) => state.room);
+
+  socket.off("room-messages").on("room-messages", (roomMessages: any) => {
+    setMessages(roomMessages);
+  });
 
   const months = [
     "Jan",
@@ -55,11 +61,12 @@ const SideBar: React.FC = () => {
     return `${months[month]} ${day}`;
   };
 
-  function joinRoom(room: any) {
+  function joinRoom(roomToJoin: any) {
     socket.emit("join-room", {
-      roomToJoin: room,
-      currentRoom: currentRoom
+      roomToJoin,
+      currentRoom
     });
+    setCurrentRoom(roomToJoin);
   }
 
   useEffect(() => {
@@ -68,11 +75,12 @@ const SideBar: React.FC = () => {
 
   useEffect(() => {
     if (user.token) {
+      setCurrentRoom(searchRoom);
       getRooms();
-      joinRoom(searchRoom);
+      socket.emit("join-room", searchRoom);
       socket.emit("new-user");
     }
-  }, [user]);
+  }, []);
 
   socket.off("new-user").on("new-user", (payload: any) => {
     setMembers(payload);
