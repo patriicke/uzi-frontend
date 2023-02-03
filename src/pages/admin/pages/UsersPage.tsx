@@ -1,8 +1,7 @@
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DataTable, TableColumn } from "../../../app/elements/datatable";
 import { format } from "../../../utils";
+import { AdminContext, IAdminContext } from "../context";
 import { getAllUsers } from "../hooks";
 
 export type IUserType = {
@@ -19,11 +18,17 @@ export type IUserType = {
 };
 
 const UsersPage: React.FC = () => {
-  const [users, setAllUsers] = useState<IUserType[]>([]);
+  const { users, setUsers } = useContext<IAdminContext>(AdminContext);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getUsers = async () => {
-    const data = await getAllUsers();
-    setAllUsers(data);
+    try {
+      const data = await getAllUsers();
+      setUsers(data);
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -49,7 +54,7 @@ const UsersPage: React.FC = () => {
     },
     {
       title: "JOINED",
-      cell: (user) => user.joined
+      cell: (user) => format.humanDate(user.joined)
     },
     {
       title: "ROOMS",
@@ -57,7 +62,7 @@ const UsersPage: React.FC = () => {
     }
   ];
 
-  return <DataTable columns={columns} data={users} isLoading={false} />;
+  return <DataTable columns={columns} data={users} isLoading={isLoading} />;
 };
 
 export default UsersPage;

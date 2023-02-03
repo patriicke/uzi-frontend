@@ -32,8 +32,7 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
     handleNextPageAction,
     handlePreviousPageAction,
     handleEditAction,
-    handleDeleteAction,
-    setMessages
+    handleDeleteAction
   } = props;
 
   const [paginate, setPaginate] = useState({
@@ -41,6 +40,8 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
     pageNumber: 1,
     pageCount: 9
   });
+
+  const [currentSkip, setCurrentSkip] = useState<number>(0);
 
   useEffect(() => {
     setPaginate((prev) => {
@@ -52,6 +53,27 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
       };
     });
   }, [data]);
+
+  function onClickFirstPage() {
+    setCurrentSkip(0);
+  }
+
+  function onClickPreviousPage() {
+    if (currentSkip == 0) return;
+    setCurrentSkip(currentSkip - 10);
+  }
+
+  function onClickPage(page: number) {
+    setCurrentSkip(page);
+  }
+
+  function onClickNextPage() {
+    if (currentSkip == 100) return;
+    setCurrentSkip(currentSkip + 10);
+  }
+  function onClickLastPage() {
+    setCurrentSkip(90);
+  }
 
   return (
     <div className='px-2'>
@@ -127,8 +149,8 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
                       <span className='w-full flex items-center justify-center gap-3'>
                         <button
                           onClick={() => {
-                            if (setMessages)
-                              deleteMessage((element as any)._id, setMessages);
+                            if (handleDeleteAction)
+                              handleDeleteAction((element as any)._id);
                           }}
                         >
                           <svg
