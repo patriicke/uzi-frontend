@@ -49,7 +49,9 @@ const DashboardPage: React.FC = () => {
     <div className='px-5'>
       <div>Welcome again to Admin Dashboard!</div>
       {isLoading ? (
-        <div className='flex items-center justify-center py-2'>Waiting...</div>
+        <div className='py-3 px-2 text-center text-sm font-normal text-light'>
+          Loading ...
+        </div>
       ) : (
         <div className='grid gap-6 md:grid-cols-2 xl:grid-cols-4 py-2'>
           {CardComponents.map(({ data, icon }, _index) => {

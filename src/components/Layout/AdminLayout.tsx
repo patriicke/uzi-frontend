@@ -3,24 +3,9 @@ import "./../../style/admin.css";
 import Sidebar from "../../pages/admin/components/sidebar";
 import { SidebarProvider } from "../../context/sidebar";
 import AdminNavBar from "../../pages/admin/components/navbar/AdminNavBar";
-import {
-  AdminContext,
-  AdminProvider,
-  IAdminContext
-} from "../../pages/admin/context";
-import { getDataBaseStatus } from "../../pages/admin/hooks";
-import { useContext, useEffect } from "react";
+import { AdminProvider } from "../../pages/admin/context";
 
 const AdminLayout = () => {
-  const { setDatabaseStatus } = useContext<IAdminContext>(AdminContext);
-  const getDatabase = async () => {
-    const data = await getDataBaseStatus();
-    setDatabaseStatus(data);
-  };
-
-  useEffect(() => {
-    getDatabase();
-  }, []);
   return (
     <AdminProvider>
       <SidebarProvider>

@@ -1,9 +1,23 @@
-import { useState, useMemo, createContext, FC, ReactNode } from "react";
+import {
+  useState,
+  useMemo,
+  createContext,
+  FC,
+  ReactNode,
+  useEffect
+} from "react";
+import { getDataBaseStatus } from "../hooks";
 import { IMessageType } from "../pages/MessagesPage";
 import { IRoomType } from "../pages/RoomsPage";
 import { IUserType } from "../pages/UsersPage";
 
 export const AdminContext = createContext<any>({});
+
+export type IDatabaseStatus = {
+  numberOfUsers: number;
+  numberOfMessages: number;
+  numberOfRooms: number;
+};
 
 export type IAdminContext = {
   messages: IMessageType[];
@@ -15,13 +29,6 @@ export type IAdminContext = {
   databaseStatus: IDatabaseStatus;
   setDatabaseStatus: Function;
 };
-
-export type IDatabaseStatus = {
-  numberOfUsers: number;
-  numberOfMessages: number;
-  numberOfRooms: number;
-};
-
 export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [messages, setMessages] = useState<IMessageType[]>([]);
   const [rooms, setRooms] = useState<IRoomType[]>([]);
@@ -31,6 +38,17 @@ export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
     numberOfMessages: 0,
     numberOfRooms: 0
   });
+
+  const getDatabase = async () => {
+    try {
+      const data = await getDataBaseStatus();
+      setDatabaseStatus(data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getDatabase();
+  }, []);
   return (
     <AdminContext.Provider
       value={{

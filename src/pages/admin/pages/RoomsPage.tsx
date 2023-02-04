@@ -1,5 +1,3 @@
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useState } from "react";
 import { DataTable, TableColumn } from "../../../app/elements/datatable";
 import { format } from "../../../utils";
@@ -19,6 +17,7 @@ export type IRoomType = {
 
 const RoomsPage: React.FC = () => {
   const { rooms, setRooms } = useContext<IAdminContext>(AdminContext);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const columns: TableColumn<IRoomType>[] = [
