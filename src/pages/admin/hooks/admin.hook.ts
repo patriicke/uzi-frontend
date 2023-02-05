@@ -31,9 +31,11 @@ export const getAllRooms = async () => {
   return null;
 };
 
-export const getAllMessages = async () => {
+export const getAllMessages = async (skip: number, limit: number) => {
   try {
-    const response = await api.get("/admin/messages/all");
+    const response = await api.get(
+      `/admin/messages/all?skip=${skip}&limit=${limit}`
+    );
     return response.data;
   } catch (error) {
     console.log(error);

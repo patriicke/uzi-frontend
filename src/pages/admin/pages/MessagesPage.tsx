@@ -18,12 +18,13 @@ export type IMessageType = {
 };
 
 const MessagesPage: React.FC = () => {
-  const { messages, setMessages } = useContext<IAdminContext>(AdminContext);
+  const { messages, setMessages, databaseStatus } =
+    useContext<IAdminContext>(AdminContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const getMessages = async () => {
+  const handleGetMessages = async (skip: number, limit: number) => {
     try {
-      const data = await getAllMessages();
+      const data = await getAllMessages(skip, limit);
       setMessages(data);
     } catch (error) {
     } finally {
@@ -36,10 +37,6 @@ const MessagesPage: React.FC = () => {
       await deleteMessage(id, setMessages);
     } catch (error) {}
   };
-
-  useEffect(() => {
-    getMessages();
-  }, []);
 
   const columns: TableColumn<IMessageType>[] = [
     {
@@ -74,6 +71,8 @@ const MessagesPage: React.FC = () => {
       columns={columns}
       isLoading={isLoading}
       handleDeleteAction={handleDeleteAction}
+      handleGetData={handleGetMessages}
+      total={databaseStatus.numberOfMessages}
     />
   );
 };

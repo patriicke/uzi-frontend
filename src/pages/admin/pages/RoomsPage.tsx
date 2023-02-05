@@ -16,7 +16,8 @@ export type IRoomType = {
 };
 
 const RoomsPage: React.FC = () => {
-  const { rooms, setRooms } = useContext<IAdminContext>(AdminContext);
+  const { rooms, setRooms, databaseStatus } =
+    useContext<IAdminContext>(AdminContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -58,7 +59,14 @@ const RoomsPage: React.FC = () => {
     getRooms();
   }, []);
 
-  return <DataTable isLoading={isLoading} data={rooms} columns={columns} />;
+  return (
+    <DataTable
+      isLoading={isLoading}
+      data={rooms}
+      columns={columns}
+      total={databaseStatus.numberOfRooms}
+    />
+  );
 };
 
 export default RoomsPage;

@@ -18,7 +18,9 @@ export type IUserType = {
 };
 
 const UsersPage: React.FC = () => {
-  const { users, setUsers } = useContext<IAdminContext>(AdminContext);
+  const { users, setUsers, databaseStatus } =
+    useContext<IAdminContext>(AdminContext);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getUsers = async () => {
@@ -62,7 +64,14 @@ const UsersPage: React.FC = () => {
     }
   ];
 
-  return <DataTable columns={columns} data={users} isLoading={isLoading} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={users}
+      isLoading={isLoading}
+      total={databaseStatus.numberOfUsers}
+    />
+  );
 };
 
 export default UsersPage;
