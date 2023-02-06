@@ -1,26 +1,14 @@
 import { createContext, useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useParams,
-  Navigate
-} from "react-router-dom";
-import NotFound from "./pages/NotFound/NotFound";
-import HomePage from "./pages/Home/HomePage";
+import { BrowserRouter as Router } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { CommonContext } from "./context";
-import AuthComponent from "./components/Auth/AuthComponent";
-import SelectRoom from "./pages/Select/SelectRoom";
+import AuthComponent from "./components/auth/AuthComponent";
 import { socket } from "./context";
-import ChatInterface from "./pages/Chat/ChatInterface";
-import CreateRoomModal from "./components/Modal/CreateRoomModal";
-import SideBarResponsive from "./components/SideBar/SideBarResponsive";
+import SideBarResponsive from "./components/sidebar/SideBarResponsive";
 import { useWhoAmI } from "./hooks/user";
-import CreatePublicUserModal from "./components/Modal/CreatePublicUserModal";
-import { useSelector } from "react-redux";
 import UserDefineRouter from "./Routes";
+import Modal from "./components/modal";
+import { IRoomType } from "./pages/admin/pages/RoomsPage";
 export const ProductContext: any = createContext({});
 
 const App = () => {
@@ -39,7 +27,9 @@ const App = () => {
   const [createPublicUserShow, setCreatePublicUserShow] =
     useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-
+  const [joinRoomShow, setJoinRoomShow] = useState<boolean>(false);
+  const [leaveRoomShow, setLeaveRoomShow] = useState<boolean>(false);
+  const [joinRoomData, setJoinRoomData] = useState<IRoomType>();
   const { whoAmI } = useWhoAmI();
 
   useEffect(() => {
@@ -78,37 +68,27 @@ const App = () => {
         createPublicUserShow,
         setCreatePublicUserShow,
         isSidebarOpen,
-        setIsSidebarOpen
+        setIsSidebarOpen,
+        joinRoomShow,
+        setJoinRoomShow,
+        leaveRoomShow,
+        setLeaveRoomShow,
+        joinRoomData,
+        setJoinRoomData
       }}
     >
-      <>
+      <Router>
         <div
           className={`${
             loginPage &&
             "blur-[4px] select-none cursor-none pointer-events-none "
           } overflow-auto h-screen min-h-screen overflow-x-hidden`}
         >
-          <Router>
-            <UserDefineRouter />
-            {window.innerWidth > 400 && <SideBarResponsive />}
-          </Router>
+          <UserDefineRouter />
+          {window.innerWidth > 400 && <SideBarResponsive />}
         </div>
-        <ToastContainer
-          position='top-right'
-          autoClose={2500}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme='colored'
-        />
-        <AuthComponent />
-        <CreateRoomModal />
-        <CreatePublicUserModal />
-      </>
+        <Modal />
+      </Router>
     </CommonContext.Provider>
   );
 };

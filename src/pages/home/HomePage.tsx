@@ -1,8 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { FormEvent, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
-import SideBar from "../../components/SideBar/SideBar";
+import SideBar from "../../components/sidebar/SideBar";
 import { CommonContext } from "../../context";
 import { setRoomsRedux } from "../../redux/slices/roomSlice";
 import { updateUserRedux } from "../../redux/slices/userSlice";
@@ -10,33 +10,27 @@ import { ICommonContext } from "../../types/common.context";
 import { User } from "../../types/user";
 
 const HomePage: React.FC = () => {
-  const { setLoginPage, loginPage, setShowSideBar, setCreatePublicUserShow } =
-    useContext<ICommonContext>(CommonContext);
+  const {
+    setLoginPage,
+    loginPage,
+    setShowSideBar,
+    setJoinRoomData
+  } = useContext<ICommonContext>(CommonContext);
   const userData: User = useSelector((state: any) => state.user.userData);
   const navigate = useNavigate();
-  const [enteredRoomCode, setEnteredRoomCode] = useState("");
+  const [roomCode, setRoomCode] = useState("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const dispatch = useDispatch();
 
-  const joinRoom = (e: React.FormEvent<HTMLFormElement>) => {
+  const joinRoomLink = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!userData.token) return setCreatePublicUserShow(true);
-
-    joinRoomForFirstTime(enteredRoomCode);
-  };
-
-  const joinRoomForFirstTime = async (roomCode: string) => {
     try {
-      setLoading(true);
-      const response = await api.post("/room/join", { roomCode });
-      const data = await response.data;
-      dispatch(setRoomsRedux(data.rooms));
-      dispatch(updateUserRedux({ ...userData, ...data.user }));
-      navigate(`/chat/${roomCode}`);
+      if (roomCode?.length > 10) return setError("Invalid room code");
+      const request = await api.get(`/room/find?roomCode=${roomCode}`);
+      const data = await request.data;
+      navigate(`/room/join/${data.room.roomCode}`);
+      setJoinRoomData(data.room);
     } catch (error: any) {
-      console.log(error);
       setError(error.response.data.message);
     } finally {
       setLoading(false);
@@ -66,7 +60,10 @@ const HomePage: React.FC = () => {
             </div>
           )}
         </div>
-        <form className='flex flex-col gap-7 items-center' onSubmit={joinRoom}>
+        <form
+          className='flex flex-col gap-7 items-center'
+          onSubmit={joinRoomLink}
+        >
           <h1 className='text-3xl font-semibold text-center px-2'>
             You don't have any Room please Join
           </h1>
@@ -78,7 +75,7 @@ const HomePage: React.FC = () => {
                 className='w-[98%] outline-none border-none bg-inherit text-gray-800 text-center'
                 placeholder='Please Enter Room Code to Join'
                 onChange={(e) => {
-                  setEnteredRoomCode(e.target.value);
+                  setRoomCode(e.target.value);
                   setError("");
                 }}
               />
@@ -86,20 +83,10 @@ const HomePage: React.FC = () => {
             {error && <div className='text-center text-red-500'>{error}</div>}
           </div>
           <div className='flex gap-3'>
-            <div
-              className='bg-primary-500 text-white py-2 px-8 rounded-[2em] cursor-pointer'
-              onClick={() => {
-                if (loading) return;
-                if (!userData.token) setLoginPage(true);
-                else navigate("/select");
-              }}
-            >
-              {loading ? "Loading..." : "Go to select"}
-            </div>
             <button
-              className='bg-primary-500 text-white py-2 px-10 rounded-[2em] disabled:bg-gray-500'
+              className='bg-primary-500 text-white py-2 px-10 rounded-[2em] disabled:bg-secondary-500 disabled:text-primary-500 shadow-md border'
               type='submit'
-              disabled={!enteredRoomCode || loading}
+              disabled={!roomCode || loading}
             >
               {loading ? "Loading..." : "Join Now"}
             </button>

@@ -150,18 +150,7 @@ const SideBarResponsive: React.FC = () => {
         </div>
         <div className='flex flex-col gap-2 overflow-auto'>
           <div className='flex justify-between px-2 items-center'>
-            <h1 className='text-lg font-semibold'>Rooms</h1>
-            {user.token && (
-              <button
-                className='p-2 bg-primary-500 text-white px-3 rounded-lg'
-                onClick={() => {
-                  if (!user.token) setLoginPage(true);
-                  else setCreateRoomShow(true);
-                }}
-              >
-                Create Room
-              </button>
-            )}
+            <h1 className='text-lg font-semibold'>Available Rooms</h1>
           </div>
           <div className='h-11 w-full border border-slate-400 rounded-[2em] p-2 px-4 flex items-center gap-2'>
             <i className='fa-solid fa-magnifying-glass cursor-pointer'></i>

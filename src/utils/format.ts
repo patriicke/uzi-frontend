@@ -30,5 +30,10 @@ export const format = {
     minutes = minutes.padStart(2, "0");
     seconds = seconds.padStart(2, "0");
     return `${minutes}:${seconds}`;
+  },
+  formatMessageDate(date: string) {
+    const [month, day, year] = date.split("/");
+
+    return `${day}/${month}/${year}`;
   }
 };

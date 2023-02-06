@@ -7,16 +7,19 @@ import { uploadImage } from "../../hooks";
 import { ROOM_VISIBILITY } from "../../lib/romm.access";
 import { addRoom } from "../../redux/slices/roomSlice";
 import { updateUserRedux } from "../../redux/slices/userSlice";
+import { ICommonContext } from "../../types/common.context";
 
-const CreateRoomModal: React.FC = () => {
-  const { createRoomShow, setCreateRoomShow, setRooms } =
-    useContext(CommonContext);
+const RoomNotFoundModal: React.FC = () => {
+  const { createRoomShow, setCreateRoomShow } =
+    useContext<ICommonContext>(CommonContext);
   const dispatch = useDispatch();
+
   document.addEventListener("keydown", (e) => {
     if (e.keyCode == 27) {
       setCreateRoomShow(false);
     }
   });
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [name, setName] = useState("");
@@ -26,6 +29,7 @@ const CreateRoomModal: React.FC = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const toastId: any = useRef(null);
   const { userData } = useSelector((state: any) => state.user);
+
   const uploadImageFn = async () => {
     toastId.current = toast.loading("Uploading image...");
     try {
@@ -103,6 +107,7 @@ const CreateRoomModal: React.FC = () => {
       setLoading(false);
     }
   };
+
   return (
     <div
       className={`h-screen w-screen absolute top-0 bg-white bg-opacity-90 flex items-center justify-center z-50 ${
@@ -205,4 +210,4 @@ const CreateRoomModal: React.FC = () => {
   );
 };
 
-export default CreateRoomModal;
+export default RoomNotFoundModal;

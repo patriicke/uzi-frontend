@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Logo from "/favicon.png";
 import Person from "./../../assets/person.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,9 @@ import { setRoomsRedux } from "../../redux/slices/roomSlice";
 import { ICommonContext } from "../../types/common.context";
 import { ICONS } from "../../assets";
 import { useLogout } from "../../hooks/user";
+import { ROLE } from "../../lib";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
 const SideBar: React.FC = () => {
   const { room: searchRoom } = useParams();
@@ -18,6 +21,10 @@ const SideBar: React.FC = () => {
   const [search, setSearch] = useState("");
   const [finalRooms, setFinalRooms] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
+  const [showDrop, setShowDrop] = useState<boolean>(false);
+
+  const DROP_ELEMENT_SHARE = useRef<any>(null);
+
   const dispatch = useDispatch();
   const { logoutUser } = useLogout();
 
@@ -32,29 +39,6 @@ const SideBar: React.FC = () => {
   } = useContext<ICommonContext>(CommonContext);
 
   const { rooms } = useSelector((state: any) => state.room);
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec"
-  ];
-
-  const formatDate = (date: string): string => {
-    if (!date) return "";
-    let dateArray: string[] = date.split("/");
-    const month: number = Number(dateArray[0]) - 1;
-    const day = dateArray[1];
-    return `${months[month]} ${day}`;
-  };
 
   function joinRoom(roomToJoin: any) {
     setCurrentRoom(roomToJoin);
@@ -115,19 +99,28 @@ const SideBar: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const clickEvent = () => {
+      if (!DROP_ELEMENT_SHARE.current?.contains(event?.target))
+        setShowDrop(false);
+    };
+    document.addEventListener("mousedown", clickEvent);
+    return () => document.removeEventListener("mousedown", clickEvent);
+  }, [DROP_ELEMENT_SHARE]);
+
   return (
     <div className={`${fullScreen && "hidden"}`}>
       <div
         className={`hidden w-1/5 md:min-w-[20em] lg:min-w-[25em] h-screen bg-slate-100 shadow-xl p-5 md:flex flex-col gap-8 relative border-r border-slate-300 duration-200`}
       >
         <Link className='flex items-center gap-2' to={"/"}>
-          <img src={Logo} alt='logo' className='w-8' />
+          <img src={Logo} alt='logo' className='w-10 rounded-full' />
           <h1 className='text-primary-500 text-xl font-semibold'>Uzi Chat</h1>
         </Link>
         <div className='flex flex-col gap-2 overflow-auto h-[87%]'>
           <div className='flex justify-between px-2 items-center'>
-            <h1 className='text-lg font-semibold'>Rooms</h1>
-            {user.token && user.role !== "PUBLIC" && (
+            <h1 className='text-lg font-semibold'>Available Rooms </h1>
+            {user.token && user.role === ROLE.ADMIN && (
               <button
                 className='p-2 bg-primary-500 text-white px-3 rounded-lg'
                 onClick={() => {
@@ -139,7 +132,7 @@ const SideBar: React.FC = () => {
               </button>
             )}
           </div>
-          <div className='h-11 w-full border border-slate-400 rounded-[2em] p-2 px-4 flex items-center gap-2'>
+          <div className='h-11 w-full border border-slate-400 rounded-[2em] p-2 px-4 flex items-center gap-2 relative'>
             <i className='fa-solid fa-magnifying-glass cursor-pointer'></i>
             <input
               type='text'
@@ -151,11 +144,11 @@ const SideBar: React.FC = () => {
             />
           </div>
           {user.token && (
-            <div className='flex gap-2 flex-col overflow-scroll'>
+            <div className='flex gap-2 flex-col overflow-scroll h-full'>
               {finalRooms?.map((room: any) => {
                 return (
                   <Link
-                    className={`flex gap-2 items-center justify-between hover:bg-gray-200 p-1 px-2 pr-3 rounded-md cursor-pointer   ${
+                    className={`flex gap-2 items-center justify-between hover:bg-gray-200 p-1 px-2 pr-3 rounded-md cursor-pointer  ${
                       currentRoom === room.roomCode && "bg-gray-300"
                     } duration-200`}
                     key={room._id}
@@ -177,17 +170,29 @@ const SideBar: React.FC = () => {
                     <span className='text-sm text-gray-500'>
                       #{room.roomCode}
                     </span>
-                    <span className='text-sm text-gray-400'>
-                      {formatDate(
-                        (
-                          allMessages?.filter((message: any) => {
-                            return message.to === room.roomCode;
-                          })[
-                            allMessages?.filter((message: any) => {
-                              return message.to === room.roomCode;
-                            }).length - 1
-                          ] as any
-                        )?.date
+                    <span
+                      className='relative'
+                      onClick={() => {
+                        setShowDrop(!showDrop);
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faEllipsis}
+                        onClick={() => {}}
+                        className='z-20'
+                      />
+                      {currentRoom === room?.roomCode && showDrop && (
+                        <span
+                          className='w-36 py-3 absolute bg-secondary-500 border shadow-sm h-28 right-0 z-50 flex flex-col p-2 gap-2 text-xs font-medium top-[calc(100%_+_3px)]'
+                          ref={DROP_ELEMENT_SHARE}
+                        >
+                          <button className='bg-primary-500 text-secondary-500 rounded-md p-2'>
+                            SHARE
+                          </button>
+                          <button className='bg-primary-500 text-secondary-500 rounded-md p-2'>
+                            LEAVE
+                          </button>
+                        </span>
                       )}
                     </span>
                   </Link>
@@ -222,13 +227,13 @@ const SideBar: React.FC = () => {
                   </button>
                 </div>
               )}
-
-              <i
-                className={`fa-solid fa-ellipsis text-2xl cursor-pointer ${
+              <FontAwesomeIcon
+                icon={faEllipsis}
+                className={`text-2xl cursor-pointer ${
                   showLogout ? "rotate-90" : "rotate-0"
                 } duration-300 ease-linear`}
                 onClick={() => setShowLogout((cur) => !cur)}
-              ></i>
+              />
             </div>
           </div>
         )}

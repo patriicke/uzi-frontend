@@ -1,15 +1,15 @@
 import { useSelector } from "react-redux";
 import { Navigate, useRoutes } from "react-router-dom";
-import AdminLayout from "./components/Layout/AdminLayout";
+import AdminLayout from "./components/layout/AdminLayout";
 import { ROLE } from "./lib";
 import DashboardPage from "./pages/admin/pages/DashboardPage";
 import MessagesPage from "./pages/admin/pages/MessagesPage";
 import RoomsPage from "./pages/admin/pages/RoomsPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
-import ChatInterface from "./pages/Chat/ChatInterface";
-import HomePage from "./pages/Home/HomePage";
-import NotFound from "./pages/NotFound/NotFound";
-import SelectRoom from "./pages/Select/SelectRoom";
+import ChatInterface from "./pages/chat/ChatInterface";
+import HomePage from "./pages/home/HomePage";
+import JoinRoom from "./pages/room/join/JoinRoom";
+import NotFound from "./pages/notfound/NotFound";
 
 const UserDefineRouter = () => {
   const { userData } = useSelector((state: any) => state.user);
@@ -25,14 +25,12 @@ const UserDefineRouter = () => {
         )
     },
     {
-      path: "/select",
+      path: "/room/join/:room",
       element:
         userData.role === ROLE.SUPERADMIN ? (
           <Navigate to='/admin' />
-        ) : userData.token ? (
-          <SelectRoom />
         ) : (
-          <Navigate to={"/"} />
+          <JoinRoom />
         )
     },
     {

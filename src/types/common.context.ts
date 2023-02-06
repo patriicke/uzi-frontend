@@ -1,3 +1,5 @@
+import { IRoomType } from "../pages/admin/pages/RoomsPage";
+
 export interface ICommonContext {
   loginPage: any;
   setLoginPage: any;
@@ -28,4 +30,10 @@ export interface ICommonContext {
   setCreatePublicUserShow: Function;
   isSidebarOpen: boolean;
   setIsSidebarOpen: Function;
+  joinRoomShow: any;
+  setJoinRoomShow: Function;
+  leaveRoomShow: boolean;
+  setLeaveRoomShow: Function;
+  joinRoomData: IRoomType;
+  setJoinRoomData: Function;
 }
