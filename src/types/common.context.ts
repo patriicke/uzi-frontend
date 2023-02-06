@@ -36,4 +36,6 @@ export interface ICommonContext {
   setLeaveRoomShow: Function;
   joinRoomData: IRoomType;
   setJoinRoomData: Function;
+  leaveRoomData: IRoomType;
+  setLeaveRoomData: Function;
 }

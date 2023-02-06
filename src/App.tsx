@@ -30,6 +30,8 @@ const App = () => {
   const [joinRoomShow, setJoinRoomShow] = useState<boolean>(false);
   const [leaveRoomShow, setLeaveRoomShow] = useState<boolean>(false);
   const [joinRoomData, setJoinRoomData] = useState<IRoomType>();
+  const [leaveRoomData, setLeaveRoomData] = useState<IRoomType>();
+
   const { whoAmI } = useWhoAmI();
 
   useEffect(() => {
@@ -74,7 +76,9 @@ const App = () => {
         leaveRoomShow,
         setLeaveRoomShow,
         joinRoomData,
-        setJoinRoomData
+        setJoinRoomData,
+        leaveRoomData,
+        setLeaveRoomData
       }}
     >
       <Router>

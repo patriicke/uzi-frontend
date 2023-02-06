@@ -12,6 +12,7 @@ import { useLogout } from "../../hooks/user";
 import { ROLE } from "../../lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { IRoomType } from "../../pages/admin/pages/RoomsPage";
 
 const SideBar: React.FC = () => {
   const { room: searchRoom } = useParams();
@@ -35,7 +36,9 @@ const SideBar: React.FC = () => {
     setCurrentRoom,
     setCreateRoomShow,
     setLoginPage,
-    fullScreen
+    fullScreen,
+    setLeaveRoomData,
+    setLeaveRoomShow
   } = useContext<ICommonContext>(CommonContext);
 
   const { rooms } = useSelector((state: any) => state.room);
@@ -47,6 +50,11 @@ const SideBar: React.FC = () => {
       currentRoom
     });
   }
+
+  const leaveRoom = (room: IRoomType) => {
+    setLeaveRoomData(room);
+    setLeaveRoomShow(true);
+  };
 
   useEffect(() => {
     setFinalRooms(rooms);
@@ -189,7 +197,12 @@ const SideBar: React.FC = () => {
                           <button className='bg-primary-500 text-secondary-500 rounded-md p-2'>
                             SHARE
                           </button>
-                          <button className='bg-primary-500 text-secondary-500 rounded-md p-2'>
+                          <button
+                            className='bg-primary-500 text-secondary-500 rounded-md p-2'
+                            onClick={() => {
+                              leaveRoom(room);
+                            }}
+                          >
                             LEAVE
                           </button>
                         </span>
