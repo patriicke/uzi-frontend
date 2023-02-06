@@ -4,7 +4,7 @@ import { CommonContext } from "../../context";
 import EmojiPicker from "emoji-picker-react";
 import { sender } from "../../hooks";
 import { api } from "../../api/api";
-import { filterMessage } from "../../utils/filter.message";
+import { filterMessage, verifyQRCodeImage } from "../../utils/filter.message";
 import { ICommonContext } from "../../types/common.context";
 import { useParams } from "react-router-dom";
 import { ICONS } from "../../assets";
@@ -17,6 +17,7 @@ import {
   faPaperPlane
 } from "@fortawesome/free-solid-svg-icons";
 import { format } from "../../utils";
+import { ChangeLinkToQRCode } from "../../lib";
 
 const ChatComponent: React.FC = () => {
   const { room: searchRoom } = useParams();
@@ -292,7 +293,24 @@ const ChatComponent: React.FC = () => {
                             }
                           `}
                           >
-                            {filterMessage(data?.content)}
+                            {verifyQRCodeImage(data?.content) ? (
+                              <span className='flex flex-col gap-1'>
+                                <a
+                                  href={data?.content}
+                                  target={"_blank"}
+                                  className='text-blue-600 underline'
+                                >
+                                  {data?.content}
+                                  <img
+                                    src={ChangeLinkToQRCode(data?.content)}
+                                    alt='QR Code'
+                                    className='w-[300px] h-[300px]'
+                                  />
+                                </a>
+                              </span>
+                            ) : (
+                              filterMessage(data?.content)
+                            )}
                           </span>
                           <span className='text-[12px] align-bottom mb-1 font-semibold text-secondary-500'>
                             {sender(data?.from, users)?.fullname}

@@ -148,10 +148,10 @@ const CreateRoomModal: React.FC = () => {
             <input
               type='radio'
               name='access'
-              id='b'
+              id='anyone_can_join'
               onChange={(e) => setAccess(ROOM_VISIBILITY.PUBLIC)}
             />
-            <label htmlFor='b' className='text-sm'>
+            <label htmlFor='anyone_can_join' className='text-sm'>
               Anyone with a link can join conversation
             </label>
           </div>
@@ -159,10 +159,10 @@ const CreateRoomModal: React.FC = () => {
             <input
               type='radio'
               name='access'
-              id='a'
+              id='only_verified_users_can_join'
               onChange={(e) => setAccess(ROOM_VISIBILITY.PRIVATE)}
             />
-            <label htmlFor='a' className='text-sm'>
+            <label htmlFor='only_verified_users_can_join' className='text-sm'>
               Only allowed members can join conversation
             </label>
           </div>

@@ -13,6 +13,7 @@ import { ROLE } from "../../lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { IRoomType } from "../../pages/admin/pages/RoomsPage";
+import axios from "axios";
 
 const SideBar: React.FC = () => {
   const { room: searchRoom } = useParams();
@@ -116,6 +117,35 @@ const SideBar: React.FC = () => {
     return () => document.removeEventListener("mousedown", clickEvent);
   }, [DROP_ELEMENT_SHARE]);
 
+  function getFormattedDate() {
+    const date = new Date();
+    const year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString();
+
+    month = month.length > 1 ? month : "0" + month;
+    let day = date.getDate().toString();
+
+    day = day.length > 1 ? day : "0" + day;
+
+    return month + "/" + day + "/" + year;
+  }
+
+  const shareRoom = (roomCode: string) => {
+    const today = new Date();
+    const minutes =
+      today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
+    const time = today.getHours() + ":" + minutes;
+    const roomId = searchRoom;
+    socket.emit(
+      "message-room",
+      roomId,
+      `${window.location.origin}/room/join/${roomId}`,
+      user,
+      time,
+      getFormattedDate()
+    );
+  };
+
   return (
     <div className={`${fullScreen && "hidden"}`}>
       <div
@@ -186,7 +216,9 @@ const SideBar: React.FC = () => {
                     >
                       <FontAwesomeIcon
                         icon={faEllipsis}
-                        onClick={() => {}}
+                        onClick={() => {
+                          setShowDrop(true);
+                        }}
                         className='z-20'
                       />
                       {currentRoom === room?.roomCode && showDrop && (
@@ -194,7 +226,12 @@ const SideBar: React.FC = () => {
                           className='w-36 py-3 absolute bg-secondary-500 border shadow-sm h-28 right-0 z-50 flex flex-col p-2 gap-2 text-xs font-medium top-[calc(100%_+_3px)]'
                           ref={DROP_ELEMENT_SHARE}
                         >
-                          <button className='bg-primary-500 text-secondary-500 rounded-md p-2'>
+                          <button
+                            className='bg-primary-500 text-secondary-500 rounded-md p-2'
+                            onClick={() => {
+                              shareRoom(room.roomCode);
+                            }}
+                          >
                             SHARE
                           </button>
                           <button
