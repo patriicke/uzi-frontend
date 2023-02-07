@@ -62,3 +62,13 @@ export const deleteMessage = async (
     return null;
   }
 };
+
+export const createUserAdmin = async (data: any) => {
+  try {
+    const request = await api.post(`/admin`);
+    const data = await request.data;
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+};

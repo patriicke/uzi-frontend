@@ -150,3 +150,17 @@ export const formatUrl = (url: string) => {
   }
   return url;
 };
+
+export const deleteMessageByUser = async (
+  messageId: string,
+  setMessages: Function
+) => {
+  try {
+    await api.delete(`/message/?id=${messageId}`);
+    setMessages((messages: any) => {
+      return messages.filter((message: any) => message._id != messageId);
+    });
+  } catch (error) {
+    return null;
+  }
+};

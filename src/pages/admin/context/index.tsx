@@ -6,7 +6,7 @@ import {
   ReactNode,
   useEffect
 } from "react";
-import { getDataBaseStatus } from "../hooks";
+import { createUserAdmin, getDataBaseStatus } from "../hooks";
 import { IMessageType } from "../pages/MessagesPage";
 import { IRoomType } from "../pages/RoomsPage";
 import { IUserType } from "../pages/UsersPage";
@@ -28,6 +28,8 @@ export type IAdminContext = {
   setUsers: Function;
   databaseStatus: IDatabaseStatus;
   setDatabaseStatus: Function;
+  showCreateUser: boolean;
+  setShowCreateUser: Function;
 };
 export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [messages, setMessages] = useState<IMessageType[]>([]);
@@ -38,6 +40,7 @@ export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
     numberOfMessages: 0,
     numberOfRooms: 0
   });
+  const [showCreateUser, setShowCreateUser] = useState<boolean>(false);
 
   const getDatabase = async () => {
     try {
@@ -59,7 +62,9 @@ export const AdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
         users,
         setUsers,
         databaseStatus,
-        setDatabaseStatus
+        setDatabaseStatus,
+        showCreateUser,
+        setShowCreateUser
       }}
     >
       {children}

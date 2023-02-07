@@ -4,6 +4,7 @@ import Sidebar from "../../pages/admin/components/sidebar";
 import { SidebarProvider } from "../../context/sidebar";
 import AdminNavBar from "../../pages/admin/components/navbar/AdminNavBar";
 import { AdminProvider } from "../../pages/admin/context";
+import AdminModals from "../../pages/admin/modal";
 
 const AdminLayout = () => {
   return (
@@ -20,6 +21,7 @@ const AdminLayout = () => {
           </div>
         </section>
       </SidebarProvider>
+      <AdminModals />
     </AdminProvider>
   );
 };

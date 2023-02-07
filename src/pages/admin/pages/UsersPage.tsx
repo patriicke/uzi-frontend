@@ -18,7 +18,7 @@ export type IUserType = {
 };
 
 const UsersPage: React.FC = () => {
-  const { users, setUsers, databaseStatus } =
+  const { users, setUsers, databaseStatus, setShowCreateUser } =
     useContext<IAdminContext>(AdminContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -55,6 +55,10 @@ const UsersPage: React.FC = () => {
       cell: (user) => user.role
     },
     {
+      title: "STATUS",
+      cell: (user) => user.status
+    },
+    {
       title: "JOINED",
       cell: (user) => format.humanDate(user.joined)
     },
@@ -65,12 +69,23 @@ const UsersPage: React.FC = () => {
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={users}
-      isLoading={isLoading}
-      total={databaseStatus.numberOfUsers}
-    />
+    <div>
+      <div>
+        <button
+          type='button'
+          className='bg-primary-500 text-white p-2 m-2 px-3 rounded-md font-medium'
+          onClick={() => setShowCreateUser(true)}
+        >
+          ADD USER
+        </button>
+      </div>
+      <DataTable
+        columns={columns}
+        data={users}
+        isLoading={isLoading}
+        total={databaseStatus.numberOfUsers}
+      />
+    </div>
   );
 };
 

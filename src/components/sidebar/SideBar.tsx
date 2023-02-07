@@ -136,6 +136,7 @@ const SideBar: React.FC = () => {
       today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
     const time = today.getHours() + ":" + minutes;
     const roomId = searchRoom;
+    setShowDrop(false);
     socket.emit(
       "message-room",
       roomId,
@@ -219,7 +220,7 @@ const SideBar: React.FC = () => {
                         onClick={() => {
                           setShowDrop(true);
                         }}
-                        className='z-20'
+                        className='z-40'
                       />
                       {currentRoom === room?.roomCode && showDrop && (
                         <span

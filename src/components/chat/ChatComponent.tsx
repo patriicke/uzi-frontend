@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CommonContext } from "../../context";
 import EmojiPicker from "emoji-picker-react";
-import { sender } from "../../hooks";
+import { deleteMessageByUser, sender } from "../../hooks";
 import { api } from "../../api/api";
 import { filterMessage, verifyQRCodeImage } from "../../utils/filter.message";
 import { ICommonContext } from "../../types/common.context";
@@ -11,13 +11,16 @@ import { ICONS } from "../../assets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
+  faChevronDown,
   faCompress,
   faExpand,
   faFaceSmile,
   faPaperPlane
 } from "@fortawesome/free-solid-svg-icons";
 import { format } from "../../utils";
-import { ChangeLinkToQRCode } from "../../lib";
+import { ChangeLinkToQRCode, ROLE } from "../../lib";
+import { IRoomType } from "../../pages/admin/pages/RoomsPage";
+import { IUserType } from "../../pages/admin/pages/UsersPage";
 
 const ChatComponent: React.FC = () => {
   const { room: searchRoom } = useParams();
@@ -26,6 +29,7 @@ const ChatComponent: React.FC = () => {
   const user = useSelector((state: any) => state.user.userData);
   const [users, setUsers] = useState([]);
   const { rooms } = useSelector((state: any) => state.room);
+  const [dropShow, setDropShow] = useState(false);
 
   const {
     socket,
@@ -163,6 +167,8 @@ const ChatComponent: React.FC = () => {
     else closeFullScreen();
   }, [fullScreen]);
 
+  console.log(messages);
+
   return (
     <div className='flex flex-col gap-2 w-full bg-primary-500'>
       <div
@@ -280,11 +286,11 @@ const ChatComponent: React.FC = () => {
                         >
                           <span
                             id='message'
-                            className={`bg-secondary-500 ${
+                            className={`bg-secondary-500  group ${
                               sender(data?.from, users)?._id === user?._id
                                 ? "rounded-l-2xl "
                                 : " rounded-r-2xl"
-                            } text-[0.9rem] p-3 font-medium flex flex-col ${
+                            } text-[0.9rem] p-4 font-medium flex flex-col ${
                               (messagesByDate[index - 1] as any)?.time !==
                                 (messagesByDate[index] as any)?.time &&
                               sender(data?.from, users)?._id === user?._id
@@ -292,9 +298,10 @@ const ChatComponent: React.FC = () => {
                                 : "rounded-tl-2xl"
                             }
                           `}
+                            onMouseLeave={() => setDropShow(false)}
                           >
                             {verifyQRCodeImage(data?.content) ? (
-                              <span className='flex flex-col gap-1'>
+                              <span className='flex flex-col gap-1 '>
                                 <a
                                   href={data?.content}
                                   target={"_blank"}
@@ -309,7 +316,49 @@ const ChatComponent: React.FC = () => {
                                 </a>
                               </span>
                             ) : (
-                              filterMessage(data?.content)
+                              <span className='flex gap-2 items-center justify-center'>
+                                <span className=''>
+                                  {filterMessage(data?.content)}
+                                </span>
+                                {(data?.from?._id === user?._id ||
+                                  rooms
+                                    .find(
+                                      (currRoom: IRoomType) =>
+                                        currRoom.roomCode === searchRoom
+                                    )
+                                    ?.users?.find(
+                                      (currUser: any) =>
+                                        currUser.role === ROLE.ADMIN
+                                    )?.userId === user?._id) && (
+                                  <span className='hidden group-hover:flex cursor-pointer relative '>
+                                    <FontAwesomeIcon
+                                      icon={faChevronDown}
+                                      onClick={() => setDropShow(!dropShow)}
+                                    />
+                                    {dropShow && (
+                                      <span
+                                        className={`bg-secondary-500 z-50 rounded-md border absolute top-[calc(100%_+_10px)] w-20 h-20 p-1 py-2 ${
+                                          data?.from?._id === user?._id &&
+                                          "right-0"
+                                        }`}
+                                      >
+                                        <button
+                                          className='text-secondary-500 bg-primary-500 p-1 rounded-md
+                                      '
+                                          onClick={() =>
+                                            deleteMessageByUser(
+                                              data?._id,
+                                              setMessages
+                                            )
+                                          }
+                                        >
+                                          DELETE
+                                        </button>
+                                      </span>
+                                    )}
+                                  </span>
+                                )}
+                              </span>
                             )}
                           </span>
                           <span className='text-[12px] align-bottom mb-1 font-semibold text-secondary-500'>
