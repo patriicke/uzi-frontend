@@ -1,15 +1,54 @@
-import React, { FormEvent, useContext, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
+import { DataTable, TableColumn } from "../../app/elements/datatable";
 import { CommonContext } from "../../context";
 import { ICommonContext } from "../../types/common.context";
-import { User } from "../../types/user";
+import { format } from "../../utils";
+import { IRoomType } from "../admin/pages/RoomsPage";
+import { getRoomByAdminUser } from "./components/hooks/admin.hook";
+import { AdminTable } from "./components/table";
 
-const PublicUserHome: React.FC = () => {
-  const { setLoginPage, loginPage, setShowSideBar, setJoinRoomData } =
-    useContext<ICommonContext>(CommonContext);
-  const userData: User = useSelector((state: any) => state.user.userData);
+const AdminUserHomePage = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [rooms, setRooms] = useState<IRoomType[]>([]);
+
+  const columns: TableColumn<IRoomType>[] = [
+    {
+      title: "ROOM NAME",
+      cell: (room: IRoomType) => room.roomName
+    },
+    {
+      title: "ROOM CODE",
+      cell: (room: IRoomType) => room.roomCode
+    },
+    {
+      title: "ACCESSIBLITY",
+      cell: (room: IRoomType) => room.access
+    },
+
+    {
+      title: "ROOM USERS",
+      cell: (room: IRoomType) => room.users.length
+    },
+    {
+      title: "CREATED AT",
+      cell: (room: IRoomType) => format.humanDate(room.createdAt)
+    }
+  ];
+
+  const handleGetRooms = async (skip: number, limit: number) => {
+    try {
+      const data = await getRoomByAdminUser(skip, limit);
+      setRooms(data);
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const { setJoinRoomData } = useContext<ICommonContext>(CommonContext);
   const navigate = useNavigate();
   const [roomCode, setRoomCode] = useState("");
   const [error, setError] = useState<string>("");
@@ -31,33 +70,8 @@ const PublicUserHome: React.FC = () => {
   };
 
   return (
-    <div className='w-full md:w-4/5 h-screen flex items-center justify-center relative'>
-      <div className='w-full px-4 flex justify-between gap-3 absolute top-2'>
-        <div
-          className='cursor-pointer z-50 md:hidden'
-          onClick={() => setShowSideBar(true)}
-        >
-          <i className='fa-solid fa-bars text-2xl'></i>
-        </div>
-        {!loginPage && !userData.token && (
-          <div className='w-full items-center justify-center flex gap-2 text-center flex-wrap'>
-            <p className='text-red-500'>It seems you're not logged in</p>
-            <p
-              className='text-primary-500 underline cursor-pointer'
-              onClick={() => setLoginPage(true)}
-            >
-              Login here
-            </p>
-          </div>
-        )}
-      </div>
-      <form
-        className='flex flex-col gap-7 items-center'
-        onSubmit={joinRoomLink}
-      >
-        <h1 className='text-3xl font-semibold text-center px-2'>
-          You don't have any Room please Join
-        </h1>
+    <div className='w-full md:w-4/5 h-screen relative p-4'>
+      <form className='flex gap-7 items-center py-4' onSubmit={joinRoomLink}>
         <div className='flex flex-col gap-1'>
           <div className='h-10 w-[20em] border border-slate-400 rounded-[2em] px-2 p-5 flex items-center'>
             <i className='fa-solid fa-circle-plus text-primary-500 text-2xl cursor-pointer'></i>
@@ -83,8 +97,15 @@ const PublicUserHome: React.FC = () => {
           </button>
         </div>
       </form>
+      <AdminTable
+        columns={columns}
+        isLoading={isLoading}
+        data={rooms}
+        total={rooms.length}
+        handleGetData={handleGetRooms}
+      />
     </div>
   );
 };
 
-export default PublicUserHome;
+export default AdminUserHomePage;

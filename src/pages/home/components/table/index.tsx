@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faEye } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export type TableColumn<Entry> = {
   title: string;
@@ -19,7 +20,7 @@ type DataTableProps<Entry> = {
   total: number;
 };
 
-export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
+export const AdminTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
   const {
     columns,
     data,
@@ -185,6 +186,9 @@ export const DataTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
                       >
                         <FontAwesomeIcon icon={faEdit} className='text-md' />
                       </button>
+                      <Link to={`/chat/${(element as any)?.roomCode}`}>
+                        <FontAwesomeIcon icon={faEye} className='text-md' />
+                      </Link>
                     </span>
                   </td>
                 </tr>

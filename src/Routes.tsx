@@ -7,7 +7,7 @@ import MessagesPage from "./pages/admin/pages/MessagesPage";
 import RoomsPage from "./pages/admin/pages/RoomsPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
 import ChatInterface from "./pages/chat/ChatInterface";
-import HomePage from "./pages/home/HomePage";
+import HomePage from "./pages/home";
 import JoinRoom from "./pages/room/join/JoinRoom";
 import NotFound from "./pages/notfound/NotFound";
 

@@ -49,7 +49,6 @@ export const deleteMessage = async (
   setMessages: Function
 ) => {
   try {
-    console.log(messageId);
     const response = await api.delete(`/admin/message/${messageId}`);
     setMessages((messages: any) => {
       return messages.filter((message: any) => message._id != messageId);

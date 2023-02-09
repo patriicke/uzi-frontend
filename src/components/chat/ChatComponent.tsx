@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CommonContext } from "../../context";
 import EmojiPicker from "emoji-picker-react";
-import { deleteMessageByUser, sender } from "../../hooks";
+import { sender } from "../../hooks";
 import { api } from "../../api/api";
 import { filterMessage, verifyQRCodeImage } from "../../utils/filter.message";
 import { ICommonContext } from "../../types/common.context";
@@ -100,6 +100,10 @@ const ChatComponent: React.FC = () => {
     setMessage("");
   }
 
+  const deleteMessage = (messageId: string) => {
+    socket.emit("delete-message", searchRoom, messageId);
+  };
+
   const [showEmojiFile, setShowEmojiFile] = useState(false);
 
   const onEmojiClick = (event: any, emojiData: any) => {
@@ -167,8 +171,6 @@ const ChatComponent: React.FC = () => {
     else closeFullScreen();
   }, [fullScreen]);
 
-  console.log(messages);
-
   return (
     <div className='flex flex-col gap-2 w-full bg-primary-500'>
       <div
@@ -201,33 +203,7 @@ const ChatComponent: React.FC = () => {
               {rooms.filter((room: any) => room.roomCode == searchRoom)[0]
                 ?.roomName ?? ""}
             </span>
-            <span className='text-secondary-500 text-sm'>
-              #{searchRoom}{" "}
-              {rooms.filter((room: any) => room.roomCode == searchRoom)[0]
-                ?.access ? (
-                <span className='font-semibold'>
-                  (
-                  {
-                    rooms.filter((room: any) => room.roomCode == searchRoom)[0]
-                      ?.access
-                  }
-                  )
-                </span>
-              ) : (
-                ""
-              )}
-              <span className='pl-2 font-bold'>
-                {rooms
-                  .filter((room: any) => room.roomCode == searchRoom)[0]
-                  ?.users?.find(
-                    (currentRoom: any) =>
-                      currentRoom.userId == user._id &&
-                      currentRoom.role === "ADMIN"
-                  )
-                  ? "GROUP ADMIN"
-                  : ""}
-              </span>
-            </span>
+            <span className='text-secondary-500 text-sm'>#{searchRoom} </span>
           </div>
         </div>
         <div className='hidden md:flex flex-row gap-2'>
@@ -255,6 +231,22 @@ const ChatComponent: React.FC = () => {
             }}
           />
         )}
+        {(user as IUserType).role === ROLE.ADMIN && (
+          <div className='absolute left-2 top-2 bg-white p-2 rounded-md'>
+            <a
+              href={window.location.href}
+              className='font-medium underline text-blue-500'
+              target='_blank'
+            >
+              {window.location.href}
+            </a>
+            <img
+              src={ChangeLinkToQRCode(window.location.href)}
+              alt='QRCode'
+              className='w-[300px] h-[300px]'
+            />
+          </div>
+        )}
         {(messages as []).map(({ _id, messagesByDate }, index: number) => (
           <div key={index} className='flex flex-col gap-[0.4em] relative'>
             <span
@@ -265,125 +257,228 @@ const ChatComponent: React.FC = () => {
             {(messagesByDate as []).map((data: any, index) => {
               return (
                 <div key={index}>
-                  <div
-                    key={index}
-                    className={`flex ${
-                      sender(data?.from, users)?._id === user?._id
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    <div className={`break-words max-w-[70%] flex gap-1`}>
-                      <div>
-                        <div
-                          className={`flex items-end gap-2  
-                     ${
-                       sender(data?.from, users)?._id === user?._id
-                         ? "flex-row-reverse"
-                         : ""
-                     }
-                        `}
-                        >
-                          <span
-                            id='message'
-                            className={`bg-secondary-500  group ${
-                              sender(data?.from, users)?._id === user?._id
-                                ? "rounded-l-2xl "
-                                : " rounded-r-2xl"
-                            } text-[0.9rem] p-4 font-medium flex flex-col ${
-                              (messagesByDate[index - 1] as any)?.time !==
-                                (messagesByDate[index] as any)?.time &&
-                              sender(data?.from, users)?._id === user?._id
-                                ? "rounded-tr-2xl"
-                                : "rounded-tl-2xl"
-                            }
+                  {(user as IUserType).role === ROLE.ADMIN ? (
+                    <div>
+                      <div key={index} className={`flex justify-end`}>
+                        <div className={`break-words max-w-[60%] flex gap-1`}>
+                          <div>
+                            <div
+                              className={`flex items-end gap-2  flex-row-reverse`}
+                            >
+                              <span
+                                id='message'
+                                className={`bg-secondary-500  group ${
+                                  sender(data?.from, users)?._id === user?._id
+                                    ? "rounded-l-2xl "
+                                    : " rounded-r-2xl"
+                                } text-[0.9rem] p-4 font-medium flex flex-col ${
+                                  (messagesByDate[index - 1] as any)?.time !==
+                                    (messagesByDate[index] as any)?.time &&
+                                  sender(data?.from, users)?._id === user?._id
+                                    ? "rounded-tr-2xl"
+                                    : "rounded-tl-2xl"
+                                }
                           `}
-                            onMouseLeave={() => setDropShow(false)}
-                          >
-                            {verifyQRCodeImage(data?.content) ? (
-                              <span className='flex flex-col gap-1 '>
-                                <a
-                                  href={data?.content}
-                                  target={"_blank"}
-                                  className='text-blue-600 underline'
-                                >
-                                  {data?.content}
-                                  <img
-                                    src={ChangeLinkToQRCode(data?.content)}
-                                    alt='QR Code'
-                                    className='w-[300px] h-[300px]'
-                                  />
-                                </a>
-                              </span>
-                            ) : (
-                              <span className='flex gap-2 items-center justify-center'>
-                                <span className=''>
-                                  {filterMessage(data?.content)}
-                                </span>
-                                {(data?.from?._id === user?._id ||
-                                  rooms
-                                    .find(
-                                      (currRoom: IRoomType) =>
-                                        currRoom.roomCode === searchRoom
-                                    )
-                                    ?.users?.find(
-                                      (currUser: any) =>
-                                        currUser.role === ROLE.ADMIN
-                                    )?.userId === user?._id) && (
-                                  <span className='hidden group-hover:flex cursor-pointer relative '>
-                                    <FontAwesomeIcon
-                                      icon={faChevronDown}
-                                      onClick={() => setDropShow(!dropShow)}
-                                    />
-                                    {dropShow && (
-                                      <span
-                                        className={`bg-secondary-500 z-50 rounded-md border absolute top-[calc(100%_+_10px)] w-20 h-20 p-1 py-2 ${
-                                          data?.from?._id === user?._id &&
-                                          "right-0"
-                                        }`}
-                                      >
-                                        <button
-                                          className='text-secondary-500 bg-primary-500 p-1 rounded-md
+                                onMouseLeave={() => setDropShow(false)}
+                              >
+                                {verifyQRCodeImage(data?.content) ? (
+                                  <span className='flex flex-col gap-1 '>
+                                    <a
+                                      href={data?.content}
+                                      target={"_blank"}
+                                      className='text-blue-600 underline'
+                                    >
+                                      {data?.content}
+                                      <img
+                                        src={ChangeLinkToQRCode(data?.content)}
+                                        alt='QR Code'
+                                        className='w-[300px] h-[300px]'
+                                      />
+                                    </a>
+                                  </span>
+                                ) : (
+                                  <span className='flex gap-2 items-center justify-center'>
+                                    <span className=''>
+                                      {filterMessage(data?.content)}
+                                    </span>
+                                    {(data?.from?._id === user?._id ||
+                                      rooms
+                                        .find(
+                                          (currRoom: IRoomType) =>
+                                            currRoom.roomCode === searchRoom
+                                        )
+                                        ?.users?.find(
+                                          (currUser: any) =>
+                                            currUser.role === ROLE.ADMIN
+                                        )?.userId === user?._id) && (
+                                      <span className='hidden group-hover:flex cursor-pointer relative '>
+                                        <FontAwesomeIcon
+                                          icon={faChevronDown}
+                                          onClick={() => setDropShow(!dropShow)}
+                                        />
+                                        {dropShow && (
+                                          <span
+                                            className={`bg-secondary-500 z-50 rounded-md border absolute top-[calc(100%_+_10px)] w-20 h-20 p-1 py-2 right-0
+                                            }`}
+                                          >
+                                            <button
+                                              className='text-secondary-500 bg-primary-500 p-1 rounded-md
                                       '
-                                          onClick={() =>
-                                            deleteMessageByUser(
-                                              data?._id,
-                                              setMessages
-                                            )
-                                          }
-                                        >
-                                          DELETE
-                                        </button>
+                                              onClick={() =>
+                                                deleteMessage(data?._id)
+                                              }
+                                            >
+                                              DELETE
+                                            </button>
+                                          </span>
+                                        )}
                                       </span>
                                     )}
                                   </span>
                                 )}
                               </span>
-                            )}
-                          </span>
-                          <span className='text-[12px] align-bottom mb-1 font-semibold text-secondary-500'>
-                            {sender(data?.from, users)?.fullname}
-                          </span>
-                        </div>
-                        {(messagesByDate[index - 1] as any)?.time !==
-                        (messagesByDate[index] as any)?.time ? (
-                          <span
-                            className={`text-[0.8rem] font-medium opacity-50 flex text-secondary-500
+                              <span className='text-[12px] align-bottom mb-1 font-semibold text-secondary-500'>
+                                {sender(data?.from, users)?.fullname}
+                              </span>
+                            </div>
+                            {(messagesByDate[index - 1] as any)?.time !==
+                            (messagesByDate[index] as any)?.time ? (
+                              <span
+                                className={`text-[0.8rem] font-medium opacity-50 flex text-secondary-500
                              ${
                                sender(data?.from, users)?._id === user?._id
                                  ? "justify-end"
                                  : "justify-start"
                              }
                             `}
-                          >
-                            {`${formatDate(_id)} ${data?.time}`}
-                          </span>
-                        ) : (
-                          <></>
-                        )}
+                              >
+                                {`${formatDate(_id)} ${data?.time}`}
+                              </span>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div
+                      key={index}
+                      className={`flex ${
+                        sender(data?.from, users)?._id === user?._id
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
+                    >
+                      <div className={`break-words max-w-[60%] flex gap-1`}>
+                        <div>
+                          <div
+                            className={`flex items-end gap-2  
+                     ${
+                       sender(data?.from, users)?._id === user?._id
+                         ? "flex-row-reverse"
+                         : ""
+                     }
+                        `}
+                          >
+                            <span
+                              id='message'
+                              className={`bg-secondary-500  group ${
+                                sender(data?.from, users)?._id === user?._id
+                                  ? "rounded-l-2xl "
+                                  : " rounded-r-2xl"
+                              } text-[0.9rem] p-4 font-medium flex flex-col ${
+                                (messagesByDate[index - 1] as any)?.time !==
+                                  (messagesByDate[index] as any)?.time &&
+                                sender(data?.from, users)?._id === user?._id
+                                  ? "rounded-tr-2xl"
+                                  : "rounded-tl-2xl"
+                              }
+                          `}
+                              onMouseLeave={() => setDropShow(false)}
+                            >
+                              {verifyQRCodeImage(data?.content) ? (
+                                <span className='flex flex-col gap-1 '>
+                                  <a
+                                    href={data?.content}
+                                    target={"_blank"}
+                                    className='text-blue-600 underline'
+                                  >
+                                    {data?.content}
+                                    <img
+                                      src={ChangeLinkToQRCode(data?.content)}
+                                      alt='QR Code'
+                                      className='w-[300px] h-[300px]'
+                                    />
+                                  </a>
+                                </span>
+                              ) : (
+                                <span className='flex gap-2 items-center justify-center'>
+                                  <span className=''>
+                                    {filterMessage(data?.content)}
+                                  </span>
+                                  {(data?.from?._id === user?._id ||
+                                    rooms
+                                      .find(
+                                        (currRoom: IRoomType) =>
+                                          currRoom.roomCode === searchRoom
+                                      )
+                                      ?.users?.find(
+                                        (currUser: any) =>
+                                          currUser.role === ROLE.ADMIN
+                                      )?.userId === user?._id) && (
+                                    <span className='hidden group-hover:flex cursor-pointer relative '>
+                                      <FontAwesomeIcon
+                                        icon={faChevronDown}
+                                        onClick={() => setDropShow(!dropShow)}
+                                      />
+                                      {dropShow && (
+                                        <span
+                                          className={`bg-secondary-500 z-50 rounded-md border absolute top-[calc(100%_+_10px)] w-20 h-20 p-1 py-2 ${
+                                            data?.from?._id === user?._id &&
+                                            "right-0"
+                                          }`}
+                                        >
+                                          <button
+                                            className='text-secondary-500 bg-primary-500 p-1 rounded-md
+                                      '
+                                            onClick={() =>
+                                              deleteMessage(data?._id)
+                                            }
+                                          >
+                                            DELETE
+                                          </button>
+                                        </span>
+                                      )}
+                                    </span>
+                                  )}
+                                </span>
+                              )}
+                            </span>
+                            <span className='text-[12px] align-bottom mb-1 font-semibold text-secondary-500'>
+                              {sender(data?.from, users)?.fullname}
+                            </span>
+                          </div>
+                          {(messagesByDate[index - 1] as any)?.time !==
+                          (messagesByDate[index] as any)?.time ? (
+                            <span
+                              className={`text-[0.8rem] font-medium opacity-50 flex text-secondary-500
+                             ${
+                               sender(data?.from, users)?._id === user?._id
+                                 ? "justify-end"
+                                 : "justify-start"
+                             }
+                            `}
+                            >
+                              {`${formatDate(_id)} ${data?.time}`}
+                            </span>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
