@@ -1,7 +1,9 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faEye } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { CommonContext } from "../../../../context";
+import { ICommonContext } from "../../../../types/common.context";
 
 export type TableColumn<Entry> = {
   title: string;
@@ -89,6 +91,8 @@ export const AdminTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
       };
     });
   }
+
+  const { setFullScreen } = useContext<ICommonContext>(CommonContext);
 
   return (
     <div className='px-2'>
@@ -186,7 +190,10 @@ export const AdminTable = <Entry extends {}>(props: DataTableProps<Entry>) => {
                       >
                         <FontAwesomeIcon icon={faEdit} className='text-md' />
                       </button>
-                      <Link to={`/chat/${(element as any)?.roomCode}`}>
+                      <Link
+                        to={`/chat/${(element as any)?.roomCode}`}
+                        onClick={() => {setFullScreen(true)}}
+                      >
                         <FontAwesomeIcon icon={faEye} className='text-md' />
                       </Link>
                     </span>

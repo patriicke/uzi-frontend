@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CommonContext } from "../../context";
 import EmojiPicker from "emoji-picker-react";
-import { sender } from "../../hooks";
+import { sender, uploadImage } from "../../hooks";
 import { api } from "../../api/api";
 import { filterMessage, verifyQRCodeImage } from "../../utils/filter.message";
 import { ICommonContext } from "../../types/common.context";
@@ -11,16 +11,28 @@ import { ICONS } from "../../assets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
+  faBrush,
   faChevronDown,
   faCompress,
   faExpand,
   faFaceSmile,
+  faImage,
   faPaperPlane
 } from "@fortawesome/free-solid-svg-icons";
+
 import { format } from "../../utils";
 import { ChangeLinkToQRCode, ROLE } from "../../lib";
 import { IRoomType } from "../../pages/admin/pages/RoomsPage";
 import { IUserType } from "../../pages/admin/pages/UsersPage";
+import ColorPicker from "react-pick-color";
+import { toast } from "react-toastify";
+import { updateUserRedux } from "../../redux/slices/userSlice";
+
+export type ITheme = {
+  image: boolean;
+  color: boolean;
+  content: string;
+};
 
 const ChatComponent: React.FC = () => {
   const { room: searchRoom } = useParams();
@@ -30,6 +42,79 @@ const ChatComponent: React.FC = () => {
   const [users, setUsers] = useState([]);
   const { rooms } = useSelector((state: any) => state.room);
   const [dropShow, setDropShow] = useState(false);
+
+  const [color, setColor] = useState("");
+  const [image, setImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const toastId: any = useRef(null);
+
+  const dispatch = useDispatch();
+
+  const [theme, setTheme] = useState<ITheme>({
+    image: user?.chatTheme?.image,
+    color: user?.chatTheme?.color,
+    content: user?.chatTheme?.content
+  });
+
+  const validateImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const file: any = e.target.files == null ? null : e.target.files[0];
+    setImage(file);
+    setPreviewImage(URL.createObjectURL(file));
+  };
+
+  const handleSave = async () => {
+    try {
+      if (
+        theme.color === user?.chatTheme?.color &&
+        theme.image === user?.chatTheme?.image &&
+        theme.content === user?.chatTheme?.content
+      )
+        return toast.warn("No changes to save");
+      setLoading(true);
+      if (theme.image === true && theme.content === previewImage) {
+        toastId.current = toast.loading("Uploading image...");
+        const imageUrl = await uploadImage(image);
+        setTheme({
+          ...theme,
+          image: imageUrl
+        });
+      }
+      const request = await api.patch("/user/theme", { theme });
+      const data = await request.data;
+      toast.update(toastId.current, {
+        render: "Image uploaded successfully",
+        type: "success",
+        isLoading: false,
+        delay: 2000
+      });
+      dispatch(
+        updateUserRedux({
+          ...user,
+          ...data.user
+        })
+      );
+    } catch (e) {
+      toast.update(toastId.current, {
+        render: "Failed to upload image!",
+        type: "error",
+        isLoading: false,
+        delay: 2000
+      });
+    } finally {
+      setLoading(false);
+      setShowColorElement(false);
+      setShowImageElement(false);
+    }
+  };
+
+  const [showColorElement, setShowColorElement] = useState<boolean>(false);
+  const [showImageElement, setShowImageElement] = useState<boolean>(false);
+
+  const COLOR_ELEMENT: any = useRef(null);
+  const IMAGE_ELEMENT: any = useRef(null);
 
   const {
     socket,
@@ -118,8 +203,12 @@ const ChatComponent: React.FC = () => {
     document.addEventListener("mousedown", () => {
       if (!emojiElement.current?.contains(event?.target))
         setShowEmojiFile(false);
+      if (!COLOR_ELEMENT.current?.contains(event?.target))
+        setShowColorElement(false);
+      if (!IMAGE_ELEMENT.current?.contains(event?.target))
+        setShowImageElement(false);
     });
-  }, [showEmojiFile]);
+  }, [showEmojiFile, showColorElement, showImageElement]);
 
   const months = [
     "Jan",
@@ -145,11 +234,16 @@ const ChatComponent: React.FC = () => {
   };
 
   const styles = {
-    backgroundImage: `url(/default_bg.jpg)`,
+    backgroundImage: `url(${
+      theme.image && theme.content == "default"
+        ? !theme.color && "/default_bg.jpg"
+        : theme.content
+    })`,
     height: "100%",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
-    backgroundPosition: "center center"
+    backgroundPosition: "center center",
+    backgroundColor: `${theme?.color && theme?.content}`
   };
 
   const documentElement = document.documentElement;
@@ -171,12 +265,46 @@ const ChatComponent: React.FC = () => {
     else closeFullScreen();
   }, [fullScreen]);
 
+  useEffect(() => {
+    if (color)
+      setTheme({
+        color: true,
+        content: color,
+        image: false
+      });
+  }, [color]);
+
+  useEffect(() => {
+    if (previewImage)
+      setTheme({
+        color: false,
+        content: previewImage,
+        image: true
+      });
+  }, [previewImage]);
+
+  const revertChange = () => {
+    setTheme({
+      image: user?.chatTheme?.image,
+      color: user?.chatTheme?.color,
+      content: user?.chatTheme?.content
+    });
+  };
+
+  const setToDefault = () => {
+    setTheme({
+      color: false,
+      image: true,
+      content: "default"
+    });
+  };
+
   return (
-    <div className='flex flex-col gap-2 w-full bg-primary-500'>
+    <div className='flex flex-col w-full'>
       <div
         className={`${
           fullScreen && "hidden"
-        } h-[8%] w-full border-b flex items-center px-1 lg:px-5 justify-between`}
+        } h-[8%] w-full border-b flex items-center px-1 lg:px-5 justify-between bg-primary-500`}
       >
         <div className='flex items-center gap-4'>
           <div
@@ -185,7 +313,10 @@ const ChatComponent: React.FC = () => {
               setShowSideBar(true);
             }}
           >
-            <FontAwesomeIcon icon={faBars} className='text-2xl' />
+            <FontAwesomeIcon
+              icon={faBars}
+              className='text-3xl text-white px-2'
+            />
           </div>
           <img
             src={
@@ -207,7 +338,97 @@ const ChatComponent: React.FC = () => {
           </div>
         </div>
         <div className='hidden md:flex flex-row gap-2'>
-          <div className='flex items-center justify-center px-2'>
+          <div className='flex items-center justify-center px-2 gap-4'>
+            {user.role == ROLE.ADMIN && (
+              <>
+                <span className='relative'>
+                  <FontAwesomeIcon
+                    icon={faImage}
+                    className='text-xl cursor-pointer text-secondary-500'
+                    onClick={() => setShowImageElement(true)}
+                  />
+                  {showImageElement && (
+                    <span
+                      ref={IMAGE_ELEMENT}
+                      className='absolute top-8 right-0 z-50 bg-secondary-500 rounded-md p-1 w-72'
+                    >
+                      <div className='flex justify-between gap-2 font-medium p-1 py-2'>
+                        <button
+                          className='w-1/3 py-1 bg-primary-500 text-white'
+                          onClick={setToDefault}
+                          disabled={loading}
+                        >
+                          DEFAULT
+                        </button>
+                        <button
+                          className='w-1/3 py-1 bg-primary-500 text-white'
+                          onClick={revertChange}
+                          disabled={loading}
+                        >
+                          REVERT
+                        </button>
+                        <button
+                          className='w-1/3 py-1 bg-primary-500 text-white'
+                          onClick={handleSave}
+                          disabled={loading}
+                        >
+                          SAVE
+                        </button>
+                      </div>
+                      <div className='py-4 flex items-center justify-center'>
+                        <label
+                          htmlFor='choose-image'
+                          className='font-medium bg-primary-500 text-secondary-500 px-3 p-1 rounded-sm'
+                        >
+                          CHOOSE IMAGE
+                        </label>
+                        <input
+                          type='file'
+                          onChange={validateImage}
+                          id='choose-image'
+                          accept='image/png, image/jpeg'
+                          className='hidden'
+                        />
+                      </div>
+                    </span>
+                  )}
+                </span>
+                <span className='relative'>
+                  <FontAwesomeIcon
+                    icon={faBrush}
+                    className='text-xl cursor-pointer text-secondary-500'
+                    onClick={() => setShowColorElement(true)}
+                  />
+                  {showColorElement && (
+                    <span
+                      className='absolute top-8 right-0 z-50 bg-secondary-500 rounded-md p-1'
+                      ref={COLOR_ELEMENT}
+                    >
+                      <div className='flex justify-between gap-2 font-medium p-1 py-2'>
+                        <button
+                          className='w-1/2 py-1 bg-primary-500 text-white'
+                          onClick={revertChange}
+                          disabled={loading}
+                        >
+                          REVERT
+                        </button>
+                        <button
+                          className='w-1/2 py-1 bg-primary-500 text-white'
+                          onClick={handleSave}
+                          disabled={loading}
+                        >
+                          SAVE
+                        </button>
+                      </div>
+                      <ColorPicker
+                        color={color}
+                        onChange={(color) => setColor(color.hex)}
+                      />
+                    </span>
+                  )}
+                </span>
+              </>
+            )}
             <span onClick={() => setFullScreen(!fullScreen)}>
               <FontAwesomeIcon
                 icon={faExpand}
@@ -232,7 +453,11 @@ const ChatComponent: React.FC = () => {
           />
         )}
         {(user as IUserType).role === ROLE.ADMIN && (
-          <div className='absolute left-2 top-2 bg-white p-2 rounded-md'>
+          <div
+            className={`fixed ${
+              fullScreen ? "top-2" : "top-20"
+            } bg-white p-2 rounded-md w-fit`}
+          >
             <a
               href={window.location.href}
               className='font-medium underline text-blue-500'
@@ -243,7 +468,7 @@ const ChatComponent: React.FC = () => {
             <img
               src={ChangeLinkToQRCode(window.location.href)}
               alt='QRCode'
-              className='w-[300px] h-[300px]'
+              className='w-[350px] h-[350px] hidden lg:block'
             />
           </div>
         )}
@@ -267,16 +492,10 @@ const ChatComponent: React.FC = () => {
                             >
                               <span
                                 id='message'
-                                className={`bg-secondary-500  group ${
-                                  sender(data?.from, users)?._id === user?._id
-                                    ? "rounded-l-2xl "
-                                    : " rounded-r-2xl"
-                                } text-[0.9rem] p-4 font-medium flex flex-col ${
+                                className={`bg-secondary-500  group rounded-l-2xl text-[0.9rem] p-4 font-medium flex flex-col ${
                                   (messagesByDate[index - 1] as any)?.time !==
                                     (messagesByDate[index] as any)?.time &&
-                                  sender(data?.from, users)?._id === user?._id
-                                    ? "rounded-tr-2xl"
-                                    : "rounded-tl-2xl"
+                                  "rounded-tr-2xl"
                                 }
                           `}
                                 onMouseLeave={() => setDropShow(false)}
@@ -292,7 +511,7 @@ const ChatComponent: React.FC = () => {
                                       <img
                                         src={ChangeLinkToQRCode(data?.content)}
                                         alt='QR Code'
-                                        className='w-[300px] h-[300px]'
+                                        className='w-[350px] h-[350px] hid'
                                       />
                                     </a>
                                   </span>
@@ -345,12 +564,7 @@ const ChatComponent: React.FC = () => {
                             (messagesByDate[index] as any)?.time ? (
                               <span
                                 className={`text-[0.8rem] font-medium opacity-50 flex text-secondary-500
-                             ${
-                               sender(data?.from, users)?._id === user?._id
-                                 ? "justify-end"
-                                 : "justify-start"
-                             }
-                            `}
+                                 justify-end`}
                               >
                                 {`${formatDate(_id)} ${data?.time}`}
                               </span>
@@ -408,7 +622,7 @@ const ChatComponent: React.FC = () => {
                                     <img
                                       src={ChangeLinkToQRCode(data?.content)}
                                       alt='QR Code'
-                                      className='w-[300px] h-[300px]'
+                                      className='w-[350px] h-[350px] hid'
                                     />
                                   </a>
                                 </span>
@@ -486,7 +700,9 @@ const ChatComponent: React.FC = () => {
         ))}
       </div>
       <form
-        className='h-[8%] w-full border-t px-3 flex xl:px-56 justify-between gap-2 bg-primary-500'
+        className={`h-[8%] w-full border-t px-3 flex xl:px-56 justify-between gap-2 bg-primary-500 ${
+          user.role === ROLE.ADMIN && "hidden"
+        }`}
         onSubmit={handleSubmit}
       >
         <div className='w-[95%] flex items-center justify-center'>
